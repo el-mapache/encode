@@ -1,0 +1,19 @@
+DEPENDENCY LOCATIONS
+
+As of January 2011 these are the links I used to install ffmpeg dependent libraries
+
+git clone git://source.ffmpeg.org/ffmpeg.git
+git clone git://git.videolan.org/x264.git
+git clone http://git.chromium.org/webm/libvpx.git
+wget -c 'http://downloads.sourceforge.net/project/lame/lame/3.98.4/lame-3.98.4.tar.gz'
+wget -c 'http://www.tortall.net/projects/yasm/releases/yasm-1.0.0.tar.gz' --NEEDED for h264
+wget -c 'http://downloads.xiph.org/releases/ogg/libogg-1.2.0.tar.gz'
+wget -c 'http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.1.tar.bz2'
+wget -c 'http://downloads.xvid.org/downloads/xvidcore-1.2.2.tar.gz'
+wget http://prdownloads.sourceforge.net/faac/faad2-2.0.tar.gz?download
+wget http://prdownloads.sourceforge.net/faac/faac-1.24.tar.gz?download
+
+
+Config setting for MacOSX/Linux (your mileage may vary)
+
+--enable-libfaac --enable-libx264 --enable-libxvid --enable-nonfree --enable-gpl --enable-libmp3lame --enable-pthreads --enable-libvpx --enable-libvorbis --disable-mmx --arch=x86_32 --enable-shared --enable-libtheora --pkg-config=pkg-config --enable-version3

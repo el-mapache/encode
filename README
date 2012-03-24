@@ -1,0 +1,28 @@
+Encoder is an audio transcoding tool for the web build on node.js and redis.  It utilizes a simple drag and drop interface to upload files; the user can them download them directly in browser or receive an email with a link to download the file.
+
+Given an FFMPEG install using the configuration options I've provided, the app is certainly usable, however there are several optimizations/to-dos to be completed before it can be called fully functional.
+
+In no particular order:
+
+- Currently database cleanup is limited to one folder.
+
+- A number of settings need to be added the the external configs file
+
+- Progress bar implemented for ffmpeg conversion
+
+- nicer looking email download page
+
+-Codebase needs refactoring to be cleaner and more readable; eventually provide a simple API for devs
+
+
+USAGE
+
+
+1. Install node/ffmpeg/redis
+3. create a configs.js in folder root
+2. Add options to the configs.js file:
+	userName: email for smtp via gmail
+	passWord: password for aforementioned email
+	downloadFrom: absolute URL you are hosting this program from
+	redisCacheTime: length of time to keep database entries
+	atPort: port your node instance is running on

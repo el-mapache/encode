@@ -1,0 +1,100 @@
+html, body{width:100%;height:auto;margin:0;padding:0;font-family:'Helvetica', 'Arial', sans-serif;
+            font-size:16px;background:url('images/bright_squares.png');}
+.floatLeft { float: left; }
+.floatRight { float: right; }
+*:focus{outline:rgb(100,100,100);}
+/*fonts
+ 9, 12, 16, 21, 28, 36,48,64
+ 
+ 
+ 
+*/
+#list{margin:0px 0 10px 0px;display:none;line-height:1.4em;width:400px;}
+#list ul{list-style:none;height:100px;}
+#list ul li{font-size:16px;color:#333;letter-spacing:.1em;}
+#container{width:1024px;height:auto;margin:0 auto;padding:0;}
+#instructions{float:right;width:422px;display:block; background-color:#dEdEEE;overflow:hidden;margin-top:20px;
+              padding-left:20px;line-height:1.4em;}
+              #instructions ul{list-style:none;}
+#drop-zone{position:relative;display:block;height:150px;width:460px;
+            background-color:#eee;margin-bottom:18px;
+            border:2px dashed #aaa;
+            -webkit-border-radius:6px 6px;-moz-border-radius:6px 6px;
+            border-radius:6px 6px;}
+#drop-zone p{position:relative;width:auto;margin:0 auto;font-family:'Helvetica-Bold', 'Arial-Bold';
+            font-size:18px;margin-top:65px;margin-left:40px;}
+#chromeDrop{position:absolute;width:100%;height:100%;top:0;left:0;opacity:0;}
+#no-HTML5{margin-top:20px;margin-left:20%;font-size:18px;}
+#step-1,#step-2{margin-top:25px;margin-bottom:25px;font-family:'Helvetica-Bold', 'Arial-Bold';
+        background-color:#dEdEEE;display:block;padding:1px;width:422px;font-variant:small-caps;font-size:21px;}
+#step-2{margin-left: 0px;width: 460px}
+#step-1,#step-2 p{padding-left:40px;color:#444546;text-transform:uppercase;}
+
+/*MASTHEAD
+----------------------------*/
+#mast{background-color:#20A7FA;height:200px;width:100%;color:white;padding-bottom:20px;
+      border-bottom:6px solid #556270;overflow:hidden;}
+#title{position:relative;float:left;margin-top:100px;margin-left:40px;font-size:64px;
+        text-shadow: 2px 1px rgba(25, 12, 7, .75);font-family:'CPMono_V07Plain';height:0;}
+#sub{letter-spacing:.1em;margin-left:-295px;margin-top:170px;margin-bottom:80px;float:left;position:relative;}
+
+/* FORM
+----------------------------*/
+#options{margin:-20px 0 0 10px;}
+#form-a{float:left;width:462px;}
+#settings{float: right;padding: 0 10px 0 10px;width:470px;background-color:#dEdEEE;height:auto;}
+form{height:600px;position:relative;width:1024px;overflow:hidden;}
+label{font-family:'Helvetica', 'Arial';color: #393939;
+font-family: 'Helvetica', 'Arial', Sans-Serif;
+font-size: 92%;
+text-transform: uppercase;
+margin: 0 0 5px 0;
+width: 150px;
+margin: 20px 0 5px 0;float:left;letter-spacing:.1em;}
+#email{border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;
+        height:15px;width:237px;border:2px solid #556270;font-size:16px;padding:10px;margin:2px;background-color:#eee;}
+input{margin: 10px 0 5px 0;width: 200px;}
+input[type="checkbox"] {width:auto;}
+#noEmail{margin-top:32px;margin-left:0px;}
+select{width:auto;margin: 20px 0 5px 0px;}
+#email.error{border:2px solid red;}
+#errText{font-size:16px;text-transform:uppercase;color:red;}
+input#upload{position:relative;border:2px solid #556270;font-size: 12pt;padding: 8px 0px 8px 4px;			
+			  border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;margin-left:0px;width:458px;}
+.submit{width:250px;height:50px;border:none;background-color:#EDC95e;margin:30px 0 25px 0px;
+                          text-align:center;font-size:21px;cursor:pointer;padding:5px;border-radius:10px;-moz-border-radius:10px;
+                           -webkit-transition:box-shadow .1s ease-in;box-shadow:0 0;}
+.submit:hover {background-color:#20A7FA;color:white;text-shadow: 0 1px rgba(100, 100, 100, .75);border:1px solid #2067FF;
+             -webkit-box-shadow:0px 2px 3px #999;-moz-box-shadow:0px 2px 3px #999;}
+.row{margin-bottom:40px;}
+#download-button{display:block;margin:10px 0 0 0;}
+#download-button a{text-decoration:none;}
+#upload {
+  height: 28px; /* In IE7, the height of the select element cannot be changed by height, only font-size */
+  margin-top: 4px; /* For IE7, add top margin to align select with labels */
+  line-height: 28px;
+  cursor:pointer;
+}
+
+
+
+
+/* METRICS
+----------------------------*/
+#metrics{position:relative; width:460px;}
+#progressIndicator{ font-size: 10pt;
+    height: 155px;
+    margin-left: -2px;
+    margin-top: -240px;
+    width: 425px;}
+.visible{background-color:#dEdEEE;/*border: 3px solid #556270;*/padding:10px 0 30px 40px;width: 470px;border-radius: 10px;-moz-border-radius: 10px;}
+#progressBar{display:none;height: 14px;border: 1px solid #cccccc;border-radius:5px;margin:10px 15px 0 0;
+            -moz-border-radius:5px;background-image: -moz-linear-gradient(top, #348dee, #348dFF);
+            background-image:-webkit-gradient(linear, left top, right bottom, from(#348dee), to(#348dFF));}
+#uploadResponse{font-size:16px;width:400px;height:auto;margin-top:10px;margin-left:-2px;
+                padding:5px;overflow:hidden;display:none;border-radius:5px;
+               -moz-border-radius:5px;border:1px solid #aaa;background-color:#eee;}
+#upoloadResponse span{margin-right:20px;text-transform:none;}
+#progressNumber{font-size:12pt;margin-top:10px;}
+#transferBytesInfo{margin-top:20px;font-size:12pt;}
+#transferSpeedInfo{margin-top:10px;}

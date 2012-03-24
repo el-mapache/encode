@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	 <title>Cross format audio transcoder</title>
+   <meta charset='utf-8' />
+	 <link href='favicon.ico' />
+   <link rel='stylesheet' href='css/style.css' />
+   <link rel='stylesheet' href='css/CPMono/stylesheet.css' />
+   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+   <script src='scripts/upload.js'></script>
+</head>
+   <body>
+      <section id='container'>
+        <header id='mast'>
+          <h1 id='title'>encoder</h1>
+          <p id='sub'><em>cross-format audio transcoder</em></p>
+        </header>
+      
+        <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload'>
+          
+          <section id='form-a'>    
+            
+            <aside id='step-1'>
+              <p>step 1: add audio file</p>
+            </aside>
+           
+            <div id='drop-zone'>
+              <p id='message'><em>Drag audio file here</em></p>
+              <input type='file' id='chromeDrop' />
+                
+                <div id='list'>
+                  <ul>
+                    <li id="fileName"></li>
+                    <li id="fileSize"></li>
+                    <li id="fileType"></li>
+                    <li id='lastMod'></li>
+                  </ul>
+                </div>
+      
+            </div>
+       
+            <input type='file' accept='audio/mp3, audio/wav, audio/m4a' name='upload' id='upload' />     
+          </section>  
+              
+          <aside id='instructions'>
+            <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
+            <ul>
+              <li>1. drag a file or select one from the file upload field.</li>
+              <li>2. select your encode settings</li>
+              <li>3. enter an email to send the file or download it straight from your browser!</li>
+            </ul>
+          </aside>
+          
+          <section id='settings'>
+            
+            <aside id='step-2'>
+              <p>step 2: choose encode settings</p>
+            </aside>
+            
+             
+              <label for='numTracks'>track count: </label>
+              <select name='numTracks' id='tracks'>
+                <option value='2' selected='selected'>2-channel stereo</option>
+                <option value='1'>single channel mono</option>
+              </select>
+          
+              <br />             
+                
+              <label class='left' for='format'>output as: </label>
+              <select name='format' id='formats'>
+                <option id='webm' value='libvorbis.webm'>WebM</option>
+                <option id='mp4' value='aac_mp4'>MP4</option>
+                <option id='mp3' value='libmp3lame.mp3' selected='selected'>MP3</option>
+                <option id='flac' value='flac.flac'>FLAC</option>
+                <option id='ogg' value='libvorbis.ogg'>OGG</option>
+              </select>
+              
+              <br />           
+              
+              <label class='left' for='bitRate'>bitrate: </label>
+              <select name='bitRate' id='bRate'>
+                <option value='64000'>64k</option>
+                <option value='96000'>96k</option>
+                <option value='128000'>128k</option>
+                <option value='192000'>192k</option>
+                <option value='256000' selected='selected'>256k</option>
+                <option value='320000'>320k</option>
+              </select>
+                 
+              <br />
+              
+              <label for='sampleRate'>sample rate:</label>
+              <select name='sampleRate' id='sRate'>
+                <option value='44100' selected='selected'>44.1K</option>
+                <option value='48000'>48k</option>
+              </select>
+                
+              <br />
+                
+              <label for='noEmail'>download immediately:</label>
+              <input type='checkbox' name='noEmail' id='noEmail' />
+              
+              <div id='for-email' class='left'>
+                <br />  
+                <label for='email'>send file: </label>
+                <input type='email' name='email' id='email' />
+              </div>
+               
+              <input type='button' class='submit' id='submit' value='upload and convert' />
+           
+          </section>
+          
+        </form><br />
+            <div id='metrics'> 
+          <div id="progressIndicator">
+            <div id="transferBytesInfo">&nbsp;</div>
+            <div id="progressBar" class="floatLeft"></div>
+            <div id="progressNumber">&nbsp;</div>
+            <div class="clear"></div>
+            <div id="transferSpeedInfo">&nbsp;</div>
+            <div id="uploadResponse"></div>
+          </div>
+        </div>
+
+      </section>
+  </body>
+</html>
