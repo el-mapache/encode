@@ -1,32 +1,39 @@
-var app = angular.module("encoder",[]);
+var app = angular.module('encoder',[]);
 
-app.controller("UploaderCtrl", function($scope) {
+app.controller('UploaderCtrl', function($scope) {
   
 });
 
-app.controller("DragDropCtrl", function($scope) {
+app.controller('DragDropCtrl', function($scope) {
+  // Properties
   $scope.dragging = false;
   $scope.file = null;
   $scope.hasFile = false;
+  $scope.error = {};
 
   // RegExp representing default file mime types
   $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/mp4/;
   
   // Default drop area text 
-  $scope.dropText = "Drag an audio file here.";
+  $scope.dropText = 'Drag an audio file here.';
 
-  $scope.preventDefault = function(evt) {
+
+
+
+  // Wrapped for convienience
+  $scope.noop = function(evt) {
     evt.preventDefault();
   };
   
   $scope.isFile = function(evt) {
-    return evt.dataTransfer.types[0] === "Files";
+    return evt.dataTransfer.types[0] === 'Files';
   }
   
+  // 
   $scope.isValidType = function() {
     return $scope.allowedFileTypes.test($scope.file.type);
   };
-
+  
   $scope.handleDrop = function(evt) {
     if ($scope.isFile(evt)) {
       // Grab first file dragged in, as we only allow one at a time
@@ -37,22 +44,25 @@ app.controller("DragDropCtrl", function($scope) {
     $scope.dragging = !$scope.dragging;
   };
 
+  $scope.addError = function(message) {
+    $scope.error = {
+      error: true,
+      message: message
+    };
+  };
+
   $scope.verifyFile = function() { 
     if (!$scope.isValidType()) {
-      return $scope.error = {
-        error: true,
-        message: "Only audio files are allowed."
-      };
+      return $scope.addError("Only audio files are allowed!");
     }
 
     if (!$scope.allowedFileTypes.test($scope.file.type)) {
-      return $scope.error = {
-        error: true,
-        message: "Invalid audio format."
-      };
+      return $scope.addError("Invalid audio format!");
     }
-    
-    $scope.hasFile = $scope.file ? !$scope.hasFile : !!$scope.hasFile;
+
+    if ($scope.error.error) $scope.error = {}; 
+
+    $scope.hasFile = true;
   };
 
   $scope.getFileSize = function() {
@@ -63,22 +73,22 @@ app.controller("DragDropCtrl", function($scope) {
   };
 });
 
-app.directive("dragDrop", ["$parse", function ($parse) {
+app.directive('dragDrop', ['$parse', function ($parse) {
   return {
-    restrict: "EA",
+    restrict: 'EA',
     transclude: true,
     replace: false,
     templateUrl: '/scripts/file-info.html',
-    controller: "DragDropCtrl",
+    controller: 'DragDropCtrl',
     scope: {
-      dragging: "&dragging",
-      fileInfo: "&file",
-      dropText: "&dropText"
+      dragging: '&dragging',
+      fileInfo: '&file',
+      dropText: '&dropText'
     },
     link: function(scope, elem, attrs, controller) {
       scope.dropText = attrs.dropText || scope.dropText;
       scope.allowedFileTypes = (attrs.allowedFileTypes && $parse(attrs.allowedFileTypes)(scope)) || scope.allowedFileTypes;
-console.log(scope)
+
       function dragInOut(evt) {
         scope.$apply(function() {
           scope.dragging  = !scope.dragging;
@@ -87,18 +97,18 @@ console.log(scope)
 
       elem.bind('dragleave', dragInOut);
       elem.bind('dragenter', dragInOut);
-      elem.bind("dragstart", dragInOut);
-      elem.bind("dragend", dragInOut);
+      elem.bind('dragstart', dragInOut);
+      elem.bind('dragend', dragInOut);
 
       elem.bind('dragover', function(evt) {
         scope.$apply(function() {
-          scope.preventDefault(evt);
+          scope.noop(evt);
         });
       });
 
       elem.bind('drop', function(evt) {
         scope.$apply(function() {
-          scope.preventDefault(evt);
+          scope.noop(evt);
           scope.handleDrop(evt);
         });
       });
