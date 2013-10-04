@@ -9,12 +9,26 @@ app.controller("DragDropCtrl", function($scope) {
   $scope.file = null;
   $scope.hasFile = false;
 
+  // RegExp representing default file mime types
+  $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/mp4/;
+  
+  // Default drop area text 
+  $scope.dropText = "Drag an audio file here.";
+
   $scope.preventDefault = function(evt) {
     evt.preventDefault();
   };
+  
+  $scope.isFile = function(evt) {
+    return evt.dataTransfer.types[0] === "Files";
+  }
+  
+  $scope.isValidType = function() {
+    return $scope.allowedFileTypes.test($scope.file.type);
+  };
 
   $scope.handleDrop = function(evt) {
-    if (evt.dataTransfer.types[0] === "Files") {
+    if ($scope.isFile(evt)) {
       // Grab first file dragged in, as we only allow one at a time
       $scope.file = evt.dataTransfer.files[0];
       $scope.verifyFile();
@@ -24,7 +38,7 @@ app.controller("DragDropCtrl", function($scope) {
   };
 
   $scope.verifyFile = function() { 
-    if (!/audio.*/.test($scope.file.type)) {
+    if (!$scope.isValidType()) {
       return $scope.error = {
         error: true,
         message: "Only audio files are allowed."
@@ -43,9 +57,9 @@ app.controller("DragDropCtrl", function($scope) {
 
   $scope.getFileSize = function() {
     if ($scope.file.size > 1024 * 1024) {
-        return (Math.round($scope.file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+        return (Math.floor($scope.file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
     }
-    return (Math.round($scope.file.size * 100 / 1024) / 100).toString() + 'KB';
+    return (Math.floor($scope.file.size * 100 / 1024) / 100).toString() + 'KB';
   };
 });
 
@@ -58,21 +72,16 @@ app.directive("dragDrop", ["$parse", function ($parse) {
     controller: "DragDropCtrl",
     scope: {
       dragging: "&dragging",
-      fileInfo: "&file"
+      fileInfo: "&file",
+      dropText: "&dropText"
     },
     link: function(scope, elem, attrs, controller) {
-      var fileTypes;
-
-      scope.dropText = attrs.dropText || "Drop your audio file here.";
-      
-      fileTypes = attrs.allowedFileTypes ? $parse(attrs.allowedFileTypes)(scope) : ['audio/mp3','audio/wav','audio/mp4'];
-
-      scope.allowedFileTypes = new RegExp(fileTypes.join("|"));
-
+      scope.dropText = attrs.dropText || scope.dropText;
+      scope.allowedFileTypes = (attrs.allowedFileTypes && $parse(attrs.allowedFileTypes)(scope)) || scope.allowedFileTypes;
+console.log(scope)
       function dragInOut(evt) {
         scope.$apply(function() {
           scope.dragging  = !scope.dragging;
-          console.log(scope.dragging);
         });
       }
 
@@ -93,9 +102,7 @@ app.directive("dragDrop", ["$parse", function ($parse) {
           scope.handleDrop(evt);
         });
       });
-
     }
   }
 }]);
-
 

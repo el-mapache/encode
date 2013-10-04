@@ -22,11 +22,10 @@
             <aside class="grid-margin encodr-gray-bg encodr-info-box">
               <p>step 1: add audio file</p>
             </aside>
-            <div drag-drop id="drop-zone" data-ng-class="{'on-hover': dragging}" allowed-file-types="['audio/mp3', 'audio/mp4', 'audio/wav']" drop-text="Drop your audio file here."></div> 
-       
+            <div drag-drop id="drop-zone" data-ng-class="{'on-hover': dragging}"></div> 
+            <p class="grid-margin">OR</p> 
             <input type='file' accept='audio/mp3, audio/wav, audio/m4a' name='upload' id='upload' />     
           </section>  
-              
           <aside id='instructions'>
             <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
             <ul>
