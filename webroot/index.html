@@ -1,43 +1,28 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-	 <title>Cross format audio transcoder</title>
-   <meta charset='utf-8' />
-	 <link href='favicon.ico' />
-   <link rel='stylesheet' href='css/style.css' />
-   <link rel='stylesheet' href='css/CPMono/stylesheet.css' />
-   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
-   <script src='scripts/upload.js'></script>
+  <title>Cross format audio transcoder</title>
+  <meta charset='utf-8' />
+  <link href='favicon.ico' />
+  <link rel='stylesheet' href='css/style.css' />
+  <link rel='stylesheet' href='css/CPMono/stylesheet.css' />
+  <script src="scripts/angular.min.js"></script>
+  <script src="scripts/app.encoder.js"></script>
 </head>
-   <body>
-      <section id='container'>
+   <body data-ng-app="encoder">
+      <section class='container'>
         <header id='mast'>
           <h1 id='title'>encoder</h1>
           <p id='sub'><em>cross-format audio transcoder</em></p>
         </header>
-      
-        <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload'>
-          
-          <section id='form-a'>    
-            
-            <aside id='step-1'>
+
+        <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload' data-ng-controller="UploaderCtrl">
+
+          <section id='form-a'>
+            <aside class="grid-margin encodr-gray-bg encodr-info-box">
               <p>step 1: add audio file</p>
             </aside>
-           
-            <div id='drop-zone'>
-              <p id='message'><em>Drag audio file here</em></p>
-              <input type='file' id='chromeDrop' />
-                
-                <div id='list'>
-                  <ul>
-                    <li id="fileName"></li>
-                    <li id="fileSize"></li>
-                    <li id="fileType"></li>
-                    <li id='lastMod'></li>
-                  </ul>
-                </div>
-      
-            </div>
+            <div drag-drop id="drop-zone" data-ng-class="{'on-hover': dragging}" allowed-file-types="['audio/mp3', 'audio/mp4', 'audio/wav']" drop-text="Drop your audio file here."></div> 
        
             <input type='file' accept='audio/mp3, audio/wav, audio/m4a' name='upload' id='upload' />     
           </section>  
@@ -52,8 +37,7 @@
           </aside>
           
           <section id='settings'>
-            
-            <aside id='step-2'>
+            <aside class="grid-margin encodr-gray-bg encodr-info-box">
               <p>step 2: choose encode settings</p>
             </aside>
             

@@ -1,0 +1,12 @@
+<div>
+  <p class="mute" data-ng-show="!hasFile">
+    {{ dropText }}
+  </p>
+  <div id='list' data-ng-model="file" data-ng-show="hasFile">
+    <ul class="mute">
+      <li>Name: {{ file.name }}</li>
+      <li>Size: {{ file.size }}</li>
+      <li>Format: {{ file.type }}</li>
+    </ul>
+  </div>
+</div>

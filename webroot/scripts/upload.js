@@ -5,8 +5,8 @@ $(document).ready(function() {
         intervalTimer       = 0,
         drop                = $('#chromeDrop'),
         upld                = $('#upload'),
-        submit              = $('#submit');
-        var myFile          = new Object();
+        submit              = $('#submit'),
+        myFile          		= new Object();
         
     $('#upload').on({'change' : verifyFile});
     
@@ -104,7 +104,7 @@ function processForm() {
         }
         fd.append('email', document.getElementById('email').value);
         fd.append("fileToUpload", myFile.uploadedFile);
-        
+ 
     uploadRequest(fd);
 }
 
@@ -219,7 +219,6 @@ function onDragOut(e) {
 
 function onDragIn(e) {
     e.preventDefault();
-    
     $('#list').hide();
 }
 
