@@ -23,6 +23,12 @@ var upload = function(res, request){
     });
     
     form.parse(request, function(error, fields, files) {
+      if (!files) {
+        res.writeHead(500, {'content-type' : 'text/plain'});
+        res.write('No files to parse.');
+        res.end;
+      }
+
     	if(error) {
       	console.log(error);
         res.writeHead(500, {'content-type' : 'text/plain'});

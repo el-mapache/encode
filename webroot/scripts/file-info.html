@@ -1,9 +1,8 @@
-<p class="encodr-error" data-ng-show="error.error">{{ error.message }}</p>
-<div>
+<div id="drop-zone" class="rounded-border" data-ng-class="{'on-hover': dragging, 'border-solid': hasFile, 'border-dashed': !hasFile}">
   <p class="mute" data-ng-show="!hasFile">
     {{ dropText }}
   </p>
-  <div id='list' data-ng-model="file" data-ng-show="hasFile">
+  <div id='list' data-ng-show="hasFile">
     <p class="grid-margin">File Info</p>
     <ul class="mute">
       <li>Name: {{ file.name }}</li>

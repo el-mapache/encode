@@ -13,19 +13,18 @@
       <section class='container'>
         <header id='mast'>
           <h1 id='title'>encoder</h1>
-          <p id='sub'><em>cross-format audio transcoder</em></p>
+          <p id='sub'><em>audio transcoder</em></p>
         </header>
 
         <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload' data-ng-controller="UploaderCtrl">
 
           <section id='form-a'>
             <aside class="grid-margin encodr-gray-bg encodr-info-box">
-              <p>step 1: add audio file</p>
+              step 1: add audio file
             </aside>
-            <div drag-drop id="drop-zone" class="rounded-border" data-ng-class="{'on-hover': dragging, 'border-solid': hasFile, 'border-dashed': !hasFile}"></div> 
-            <p class="grid-margin">OR</p> 
-            <input type='file' accept='audio/mp3, audio/wav, audio/m4a' name='upload' id='upload' />     
+            <div dnd data-ng-transclude></div> 
           </section>  
+
           <aside id='instructions'>
             <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
             <ul>
