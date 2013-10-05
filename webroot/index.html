@@ -4,6 +4,7 @@
   <title>Cross format audio transcoder</title>
   <meta charset='utf-8' />
   <link href='favicon.ico' />
+  <link rel='stylesheet' href='css/bootstrap.min.css' />
   <link rel='stylesheet' href='css/style.css' />
   <link rel='stylesheet' href='css/CPMono/stylesheet.css' />
   <script src="scripts/angular.min.js"></script>
@@ -15,84 +16,92 @@
           <h1 id='title'>encoder</h1>
           <p id='sub'><em>audio transcoder</em></p>
         </header>
-
-        <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload' data-ng-controller="UploaderCtrl">
-
-          <section id='form-a'>
-            <aside class="grid-margin encodr-gray-bg encodr-info-box">
-              step 1: add audio file
-            </aside>
-            <div dnd data-ng-transclude></div> 
-          </section>  
-
-          <aside id='instructions'>
-            <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
-            <ul>
-              <li>1. drag a file or select one from the file upload field.</li>
-              <li>2. select your encode settings</li>
-              <li>3. enter an email to send the file or download it straight from your browser!</li>
-            </ul>
-          </aside>
+        <div class="row">
+          <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload' data-ng-controller="UploaderCtrl">
+            
+            <section class="span6">
+              <div class="row">
+                <div class="span5">
+                  <aside class="grid-margin grid-padding encodr-gray-bg encodr-info-box font-uppercase">
+                    step 1: add audio file
+                  </aside>
+                  <div dnd data-ng-transclude></div> 
+                </div>
+              </div>
+            </section>  
+            
+            <section class="span6 encodr-gray-bg">
+              <aside class="hide grid-margin encodr-gray-bg encodr-info-box">
+                <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
+                <ul>
+                  <li>1. drag a file or select one from the file upload field.</li>
+                  <li>2. select your encode settings</li>
+                  <li>3. enter an email to send the file or download it straight from your browser!</li>
+                </ul>
+              </aside>
           
-          <section id='settings'>
-            <aside class="grid-margin encodr-gray-bg encodr-info-box">
-              <p>step 2: choose encode settings</p>
-            </aside>
+              <section>
+                <aside class="encodr-gray-bg encodr-info-box font-uppercase">
+                  <p>step 2: choose encode settings</p>
+                </aside>
             
              
-              <label for='numTracks'>track count: </label>
-              <select name='numTracks' id='tracks'>
-                <option value='2' selected='selected'>2-channel stereo</option>
-                <option value='1'>single channel mono</option>
-              </select>
+                  <label for='numTracks'>track count: </label>
+                  <select name='numTracks' id='tracks'>
+                    <option value='2' selected='selected'>2-channel stereo</option>
+                    <option value='1'>single channel mono</option>
+                  </select>
           
-              <br />             
+                  <br />             
                 
-              <label class='left' for='format'>output as: </label>
-              <select name='format' id='formats'>
-                <option id='webm' value='libvorbis.webm'>WebM</option>
-                <option id='mp4' value='aac_mp4'>MP4</option>
-                <option id='mp3' value='libmp3lame.mp3' selected='selected'>MP3</option>
-                <option id='flac' value='flac.flac'>FLAC</option>
-                <option id='ogg' value='libvorbis.ogg'>OGG</option>
-              </select>
+                  <label class='left' for='format'>output as: </label>
+                  <select name='format' id='formats'>
+                    <option id='webm' value='libvorbis.webm'>WebM</option>
+                    <option id='mp4' value='aac_mp4'>MP4</option>
+                    <option id='mp3' value='libmp3lame.mp3' selected='selected'>MP3</option>
+                    <option id='flac' value='flac.flac'>FLAC</option>
+                    <option id='ogg' value='libvorbis.ogg'>OGG</option>
+                  </select>
               
-              <br />           
+                  <br />           
               
-              <label class='left' for='bitRate'>bitrate: </label>
-              <select name='bitRate' id='bRate'>
-                <option value='64000'>64k</option>
-                <option value='96000'>96k</option>
-                <option value='128000'>128k</option>
-                <option value='192000'>192k</option>
-                <option value='256000' selected='selected'>256k</option>
-                <option value='320000'>320k</option>
-              </select>
+                  <label class='left' for='bitRate'>bitrate: </label>
+                  <select name='bitRate' id='bRate'>
+                    <option value='64000'>64k</option>
+                    <option value='96000'>96k</option>
+                    <option value='128000'>128k</option>
+                    <option value='192000'>192k</option>
+                    <option value='256000' selected='selected'>256k</option>
+                    <option value='320000'>320k</option>
+                  </select>
                  
-              <br />
+                  <br />
               
-              <label for='sampleRate'>sample rate:</label>
-              <select name='sampleRate' id='sRate'>
-                <option value='44100' selected='selected'>44.1K</option>
-                <option value='48000'>48k</option>
-              </select>
+                  <label for='sampleRate'>sample rate:</label>
+                  <select name='sampleRate' id='sRate'>
+                    <option value='44100' selected='selected'>44.1K</option>
+                    <option value='48000'>48k</option>
+                  </select>
                 
-              <br />
+                  <br />
                 
-              <label for='noEmail'>download immediately:</label>
-              <input type='checkbox' name='noEmail' id='noEmail' />
+                  <label for='noEmail'>download immediately:</label>
+                  <input type='checkbox' name='noEmail' id='noEmail' />
               
-              <div id='for-email' class='left'>
-                <br />  
-                <label for='email'>send file: </label>
-                <input type='email' name='email' id='email' />
-              </div>
+                  <div id='for-email' class='left'>
+                    <br />  
+                    <label for='email'>send file: </label>
+                    <input type='email' name='email' id='email' />
+                  </div>
                
-              <input type='button' class='submit' id='submit' value='upload and convert' />
+                  <input type='button' class='submit' id='submit' value='upload and convert'>
            
-          </section>
-          
-        </form><br />
+              </section>
+            </section>
+          </form>
+          <br>
+        </div>
+        
             <div id='metrics'> 
           <div id="progressIndicator">
             <div id="transferBytesInfo">&nbsp;</div>
