@@ -1,8 +1,8 @@
 <div id="drop-zone" class="rounded-border" data-ng-class="{'on-hover': dragging, 'border-solid': hasFile, 'border-dashed': !hasFile}">
-  <p class="mute" data-ng-show="!hasFile">
+  <p class="mute encodr-indent" data-ng-show="!hasFile">
     {{ dropText }}
   </p>
-  <div id='list' data-ng-show="hasFile">
+  <div class="encodr-indent" id='list' data-ng-show="hasFile">
     <p class="grid-margin">File Info</p>
     <ul class="mute">
       <li>Name: {{ file.name }}</li>

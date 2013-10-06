@@ -11,27 +11,43 @@
   <script src="scripts/app.encoder.js"></script>
 </head>
    <body data-ng-app="encoder">
-      <section class='container'>
+      <div class='container'>
         <header id='mast'>
-          <h1 id='title'>encoder</h1>
-          <p id='sub'><em>audio transcoder</em></p>
+          <div class="pull-left">
+            <h1 id='title' class="encodr-indent">encoder</h1>
+            <p class="encodr-indent"><em>audio transcoder</em></p>
+          </div>
         </header>
-        <div class="row">
-          <form id='form' name='uploadForm' method='post' enctype='multipart/form-data' action='/upload' data-ng-controller="UploaderCtrl">
-            
+
+        <div class="row" data-ng-controller="UploaderCtrl">
+          <form id='form' name='form' method='post' enctype='multipart/form-data' data-ng-switch="downloadOptions">
             <section class="span6">
               <div class="row">
                 <div class="span5">
-                  <aside class="grid-margin grid-padding encodr-gray-bg encodr-info-box font-uppercase">
-                    step 1: add audio file
+                  <aside class="grid-margin grid-padding encodr-gray-bg font-uppercase">
+                    <h2 class="encodr-indent encodr-black">step 1: add audio file<h2>
                   </aside>
                   <div dnd data-ng-transclude></div> 
                 </div>
               </div>
+
+              <div class="row">
+                <section class="span5 grid-margin" id='metrics'> 
+                  <div id="progressIndicator">
+                    <div id="transferBytesInfo">&nbsp;</div>
+                    <div id="progressBar" class="floatLeft"></div>
+                    <div id="progressNumber">&nbsp;</div>
+                    <div class="clear"></div>
+                    <div id="transferSpeedInfo">&nbsp;</div>
+                    <div id="uploadResponse"></div>
+                  </div>
+                </section>
+              </div>
+
             </section>  
-            
+
             <section class="span6 encodr-gray-bg">
-              <aside class="hide grid-margin encodr-gray-bg encodr-info-box">
+              <aside class="encodr-indent hide grid-margin encodr-gray-bg encodr-black">
                 <p>simple audio transcoder built with node.js, redis, and ffmpeg.</p>
                 <ul>
                   <li>1. drag a file or select one from the file upload field.</li>
@@ -41,78 +57,77 @@
               </aside>
           
               <section>
-                <aside class="encodr-gray-bg encodr-info-box font-uppercase">
-                  <p>step 2: choose encode settings</p>
+                <aside class="encodr-gray-bg grid-padding font-uppercase">
+                  <h2 class="encodr-indent encodr-black">step 2: choose encode settings</h2>
                 </aside>
-            
-             
-                  <label for='numTracks'>track count: </label>
-                  <select name='numTracks' id='tracks'>
-                    <option value='2' selected='selected'>2-channel stereo</option>
-                    <option value='1'>single channel mono</option>
-                  </select>
-          
-                  <br />             
-                
-                  <label class='left' for='format'>output as: </label>
-                  <select name='format' id='formats'>
-                    <option id='webm' value='libvorbis.webm'>WebM</option>
-                    <option id='mp4' value='aac_mp4'>MP4</option>
-                    <option id='mp3' value='libmp3lame.mp3' selected='selected'>MP3</option>
-                    <option id='flac' value='flac.flac'>FLAC</option>
-                    <option id='ogg' value='libvorbis.ogg'>OGG</option>
-                  </select>
-              
-                  <br />           
-              
-                  <label class='left' for='bitRate'>bitrate: </label>
-                  <select name='bitRate' id='bRate'>
-                    <option value='64000'>64k</option>
-                    <option value='96000'>96k</option>
-                    <option value='128000'>128k</option>
-                    <option value='192000'>192k</option>
-                    <option value='256000' selected='selected'>256k</option>
-                    <option value='320000'>320k</option>
-                  </select>
-                 
-                  <br />
-              
-                  <label for='sampleRate'>sample rate:</label>
-                  <select name='sampleRate' id='sRate'>
-                    <option value='44100' selected='selected'>44.1K</option>
-                    <option value='48000'>48k</option>
-                  </select>
-                
-                  <br />
-                
-                  <label for='noEmail'>download immediately:</label>
-                  <input type='checkbox' name='noEmail' id='noEmail' />
-              
-                  <div id='for-email' class='left'>
-                    <br />  
-                    <label for='email'>send file: </label>
-                    <input type='email' name='email' id='email' />
+                <div class="encodr-indent"> 
+                  <div> 
+                    <label for='numTracks'>
+                      track count:
+                      <select name='numTracks' id='tracks' data-ng-model="formData.tracks" required>
+                        <option></option>
+                        <option value='2' selected='selected'>2-channel stereo</option>
+                        <option value='1'>single channel mono</option>
+                    </label>
+
+                    </select>
+                  </div> 
+                  
+                  <div> 
+                    <label class='left' for='format'>output as: </label>
+                    <select name='format' id='formats' data-ng-model="formData.format" required>
+                      <option></option>
+                      <option id='webm' value='libvorbis.webm'>WebM</option>
+                      <option id='mp4' value='aac_mp4'>MP4</option>
+                      <option id='mp3' value='libmp3lame.mp3' selected='selected'>MP3</option>
+                      <option id='flac' value='flac.flac'>FLAC</option>
+                      <option id='ogg' value='libvorbis.ogg'>OGG</option>
+                    </select>
+                  </div> 
+
+                  <div> 
+                    <label class='left' for='bitRate'>bitrate: </label>
+                    <select name='bitRate' id='bRate' data-ng-model="formData.bitrate" data-ng-disabled="!enableBitRate" required>
+                      <option></option>
+                      <option value='64000'>64k</option>
+                      <option value='96000'>96k</option>
+                      <option value='128000'>128k</option>
+                      <option value='192000'>192k</option>
+                      <option value='256000' selected='selected'>256k</option>
+                      <option value='320000'>320k</option>
+                    </select>
                   </div>
-               
-                  <input type='button' class='submit' id='submit' value='upload and convert'>
-           
+
+                  <div> 
+                    <label for='sampleRate'>sample rate:</label>
+                    <select name='sampleRate' id='sRate' data-ng-model="formData.samplerate" required>
+                      <option></option>
+                      <option value='44100' selected='selected'>44.1K</option>
+                      <option value='48000'>48k</option>
+                    </select>
+                  </div> 
+
+                  <div data-ng-show="!email"> 
+                    <label for='noEmail'>download immediately:</label>
+                    <input type='checkbox' data-ng-model="formData.download" name='download' id='noEmail'>
+                  </div> 
+
+                  <div id='for-email' class='left' data-ng-show="!download">
+                    <label for='email'>Send file to: </label>
+                    <input data-ng-change="validateEmail($event)" data-ng-model="formData.email" type="email" name="email" id="email" placeholder="example@internetmail.com">
+                  </div>
+
+                  <input type='button' data-ng-click="submit()" data-ng-disabled="form.$invalid" name="submit" class='submit' id='submit' value='upload and convert'>
+
+                </div>
               </section>
+
             </section>
           </form>
           <br>
         </div>
-        
-            <div id='metrics'> 
-          <div id="progressIndicator">
-            <div id="transferBytesInfo">&nbsp;</div>
-            <div id="progressBar" class="floatLeft"></div>
-            <div id="progressNumber">&nbsp;</div>
-            <div class="clear"></div>
-            <div id="transferSpeedInfo">&nbsp;</div>
-            <div id="uploadResponse"></div>
-          </div>
-        </div>
 
-      </section>
+
+      </div>
   </body>
 </html>

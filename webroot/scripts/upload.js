@@ -7,19 +7,7 @@ $(document).ready(function() {
         upld                = $('#upload'),
         submit              = $('#submit'),
         myFile          		= new Object();
-        
-    $('#upload').on({'change' : verifyFile});
-    
-    var dropzone = document.getElementById("drop-zone")
-    
-    dropzone.addEventListener('dragexit', onDragOut, false);   
-    dropzone.addEventListener('dragenter', onDragIn, false); 
-    dropzone.addEventListener('drop', handleDrop, false);    
-    dropzone.addEventListener('click', prevDef, false);  
-    dropzone.addEventListener('dragover', onDragIn, false); 
- 
-    
-    $('#email').on({'change' : verifyEmail});
+
     $('#formats').on({'change' : checkFormat });
 
     submit.click(function(e) {
@@ -55,57 +43,6 @@ function checkFormat() {
 	} else {
 		$('#bRate').prop('disabled',false);
 	}
-}
-
-function verifyFile(e) {
-    if(e.currentTarget.id === 'upload') {
-        myFile.uploadedFile = e.target.files[0];    
-    } else {
-        myFile.uploadedFile = e.dataTransfer.files[0];
-    }
-    file = myFile.uploadedFile;
-
-    if(!file.type.match('audio.*')) {
-        alert('Only audio files are allowed');
-        return false;
-    }
-        
-    if(e.target.id === upld.attr('id')) {
-        drop.prop('disabled', true);
-    } else {
-        upld.prop('disabled', true);
-    }
-        
-    $('#message').remove();
-    $('#instructions').remove();
-        
-    if(e.target.getAttribute('id') === 'upload') {
-        $('#upload').css({'background-color' : 'white', 'font-weight':300});
-    }
-        
-    getMetrics(file);
-
-    if($('section#settings').is(':visible')) {
-           
-    } else {
-        $('section#settings').toggle();
-    }
-    
-}
-
-function processForm() {
-    var fd = new FormData(document.getElementById('form'));
-        fd.append('numTracks', document.getElementById('tracks').value);
-        fd.append('format', document.getElementById('formats').value);
-        fd.append('bitRate', document.getElementById('bRate').value);
-        fd.append('sampleRate', document.getElementById('sRate').value);
-        if ( $('#noEmail').is(':checked') ) {
-            fd.append('noEmail', document.getElementById('noEmail').value);
-        }
-        fd.append('email', document.getElementById('email').value);
-        fd.append("fileToUpload", myFile.uploadedFile);
- 
-    uploadRequest(fd);
 }
 
 /* AJAX FUNCTONS
