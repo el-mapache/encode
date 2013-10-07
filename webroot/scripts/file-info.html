@@ -1,13 +1,13 @@
-<div id="drop-zone" class="rounded-border" data-ng-class="{'on-hover': dragging, 'border-solid': hasFile, 'border-dashed': !hasFile}">
-  <p class="mute encodr-indent" data-ng-show="!hasFile">
+<div id="drop-zone" class="grid-margin rounded-border" data-ng-class="{'on-hover': dragging, 'border-solid': file, 'border-dashed': !file}">
+  <p class="mute encodr-indent" data-ng-show="!file">
     {{ dropText }}
   </p>
-  <div class="encodr-indent" id='list' data-ng-show="hasFile">
-    <p class="grid-margin">File Info</p>
+  <div class="encodr-indent" id='list' data-ng-show="file">
+    <p>File Info</p>
     <ul class="mute">
-      <li>Name: {{ file.name }}</li>
-      <li>Size: {{ hasFile && getFileSize() }}</li>
-      <li>Format: {{ file.type }}</li>
+      <li><b>Name:</b> {{ file.name }}</li>
+      <li><b>Size:</b> {{ hasFile && getFileSize() }}</li>
+      <li><b>Format:</b> {{ file.type }}</li>
     </ul>
   </div>
 </div>

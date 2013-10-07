@@ -1,13 +1,16 @@
-var app = angular.module('encoder',['drag-and-drop']);
+var app = angular.module('encoder',['drag-and-drop','progress-bar']);
 
 app.service('formData', function() {
   return {
     process: function(formData) {
       var fd = new FormData();
 
+      // Loop thru form object and populate FormData instance
       angular.forEach(formData, function(value, key) {
         fd.append(key, value);
       });
+      
+      return fd;
     }
   };
 });
@@ -38,21 +41,22 @@ app.service('uploader', ['$rootScope', function($rootScope) {
       xhr.open("post", "/upload", true);
 
       xhr.onreadystatechange = function() {
-        console.log(xhr)
-        $rootScope.$broadcast("statechange", xhr.responseText);
-      }
+        if (xhr.status === 200 && xhr.readyState === 4) {
+          $rootScope.$broadcast("statechange", xhr.responseText);
+        }
+      };
 
       xhr.upload.addEventListener("progress", onProgress, false);
       xhr.addEventListener("load", onComplete, false);
       xhr.addEventListener("error", onFailed, false);
       xhr.addEventListener("abort", onCanceled, false);
 
-      xhr.send(fd);
+      xhr.send(payload);
     }
   };
-});
+}]);
 
-app.controller('UploaderCtrl', ['$scope', 'formData', function($scope, formDataService) {
+app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', function($scope, FormDataService, UploadService, $http) {
   $scope.enableBitRate = true;
   $scope.formData = {};
 
@@ -70,8 +74,10 @@ app.controller('UploaderCtrl', ['$scope', 'formData', function($scope, formDataS
       $scope.toggleEnableBitRate();
       $scope.form.bitRate.$setViewValue(256000);
     } else {
-      $scope.toggleEnableBitRate();
-      $scope.form.bitRate.$setViewValue(undefined);
+      if (!$scope.enableBitRate) {
+        $scope.toggleEnableBitRate();
+        $scope.form.bitRate.$setViewValue(undefined);
+      }
     }
   });
 
@@ -85,18 +91,21 @@ app.controller('UploaderCtrl', ['$scope', 'formData', function($scope, formDataS
 
   $scope.submit = function() {
     if ($scope.error.error) $scope.error = {};
-    
-    $scope.formData['file'] = $scope.file;
-    formDataService.process($scope.formData);
-  }; 
+    // Add the file to the formData structure
+    $scope.formData['file'] = $scope.file
+
+    var formData = FormDataService.process($scope.formData);
+
+    UploadService.upload(formData);
+  };
 }]);
 
+// Drag and Drop module, with plain html input fallback
 angular.module("drag-and-drop", [])
-  .controller('DragDropCtrl', function($scope) {
+  .controller('DragDropCtrl', ["$rootScope", "$scope", function($rootScope, $scope) {
     // Properties
     $scope.dragging = false
     $scope.file = null;
-    $scope.hasFile = false;
     $scope.error = {};
     $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/mp4/;
     $scope.dropText = 'Drag an audio file here.';
@@ -136,27 +145,29 @@ angular.module("drag-and-drop", [])
     
     $scope.verifyFile = function() { 
       if (!$scope.isValidType()) {
+        $scope.file = null;
         return $scope.addError("Only audio files are allowed!");
       }
 
       if (!$scope.allowedFileTypes.test($scope.file.type)) {
+        $scope.file = null;
         return $scope.addError("Invalid audio format!");
       }
 
       if ($scope.error.error) $scope.error = {}; 
-
-      $scope.hasFile = true;
+      
+      $rootScope.$broadcast("file");
     };
 
     $scope.getFileSize = function() {
       if ($scope.file.size > 1024 * 1024) {
-        return (Math.floor($scope.file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+        return (Math.floor($scope.file.size * 100 / (1024 * 1024)) / 100) + 'mb';
       }
       
-      return (Math.floor($scope.file.size * 100 / 1024) / 100).toString() + 'KB';
+      return (Math.floor($scope.file.size * 100 / 1024) / 100) + 'kb';
     };
 
-  }).directive("dnd", function() {
+  }]).directive("dnd", function() {
     // This directive provides a wrapper for the directives nested within,
     // ensuring everything is scoped properly
     return {
@@ -174,6 +185,7 @@ angular.module("drag-and-drop", [])
       templateUrl: '/scripts/file-info.html',
       require: "^dnd",
       link: function(scope, elem, attrs, controller) {
+
         // Set properties if they were passed in
         scope.dropText = attrs.dropText || scope.dropText;
         scope.allowedFileTypes = (attrs.allowedFileTypes && $parse(attrs.allowedFileTypes)(scope)) || scope.allowedFileTypes;
@@ -227,17 +239,71 @@ angular.module("drag-and-drop", [])
         scope.input.bind('change', scope.setFile);
       }
     };
-  }).directive('progressBar', ['$rootScope', function($rootScope) {
-    return {
-      restrict: "EA",
-      replace: true,
-      templateUrl: "/scripts/progress.html",
-      controller: function($scope) {
+  });
+  
+  angular.module('progress-bar', [])
+         .controller("ProgressCtrl", ['$rootScope',"$scope", "$timeout", function($rootScope, $scope, $timeout) {
 
-      },
-      link: function(scope, elem, attrs) {
+            $rootScope.$on("file", $scope.reset);
+              
+            $scope.reset = function() {
+              $scope.uploading = false;
+              $scope.progress = "0px";  
+            };
 
-      }
-    };
-  }]);
+            $scope.reset(); 
+            var offComplete = $rootScope.$on("complete", function(evt, response) {
+              $scope.$apply(function() {
+                $scope.response = "Your file was uploaded successfully.";
+              });
+              offComplete();
+            });
+
+            var offProgress = $rootScope.$on("progress", function(evt, bytesLoaded, byteTotal) {
+              $scope.$apply(function() {
+                if (!$scope.uploading) $scope.uploading = !$scope.uploading;
+
+                $scope.updateProgress(bytesLoaded, byteTotal);
+              });
+
+              // Remove the listener once the file has finished uploading
+              if (bytesLoaded == byteTotal) offProgress();
+            });
+
+            $scope.updateProgress = function(uploaded, total) {
+              var bytesUploaded = uploaded,
+                  bytesTotal = total,
+                  percentComplete = Math.round(uploaded * 100 / total);
+
+
+              if (bytesUploaded > 1024*1024) {
+                $scope.bytesTransfered = (Math.round(bytesUploaded * 100/(1024*1024))/100) + 'mb';
+              } else if (bytesUploaded > 1024) {
+                $scope.bytesTransfered = (Math.round(bytesUploaded * 100/1024)/100) + 'kb';
+              } else {
+                $scope.bytesTransfered = (Math.round(bytesUploaded * 100)/100) + 'bytes';
+              }
+              
+              $scope.progress = (percentComplete * 3.55) + 'px';
+              $scope.percent = percentComplete + "%";
+            };
+         }]).directive('progressBar', function() {
+          return {
+            restrict: "AE",
+            replace: true,
+            templateUrl: "/scripts/progress.html",
+            controller: 'ProgressCtrl',
+            scope: false,
+            //scope: {
+            //  "uploading": "@uploading",
+            //  "response": "@response",
+            //  "percent": "@percent",
+            //  "progress": "@progress"
+            //},
+            link: function(scope, elem, attrs) {
+            }
+          };
+        });
+
+console.log(app);
 

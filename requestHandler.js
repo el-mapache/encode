@@ -11,19 +11,18 @@ var upload = function(res, request){
     console.log("Request Handler 'upload' was called.");
     var form = new formidable.IncomingForm();
     		form.uploadDir = './data/incoming/';
-    console.log('About to parse');
-    console.log(form);
+    form.type = 'multipart';
 
-    fs.readdir('./data/uploads', function(err, files){
+    /*fs.readdir('./data/uploads', function(err, file){
     	if(err) console.log(err);
       //add ability to hook into this is display all user's uploaded files
-      if(files) {
+      if (file) {
       	console.log("here are some file" + files);
       }
-    });
+    });*/
     
-    form.parse(request, function(error, fields, files) {
-      if (!files) {
+    form.parse(request, function(error, fields, file) {
+      if (!file) {
         res.writeHead(500, {'content-type' : 'text/plain'});
         res.write('No files to parse.');
         res.end;
@@ -36,20 +35,20 @@ var upload = function(res, request){
         res.end;
       }
         
-	     console.log(files);
+	     console.log(file.file);
 	     console.log(fields);
 	     var codecParse  = fields.format.split('.'),
 		       codec       = codecParse[0],
 		       format      = codecParse[1],
-		       tracks      = fields.numTracks,
-		       sampleRate  = fields.sampleRate,
-		       rate        = fields.bitRate,
+		       tracks      = fields.tracks,
+		       sampleRate  = fields.samplerate,
+		       rate        = fields.bitrate,
 		       formatExt   = '.' + codecParse[1],
-		       file        = files.fileToUpload.name,
+		       filename    = file.file.name,
 		       clientEmail = '',
 		       browserDL   = '',
 		       date        = new Date(),
-		       output      = file.split('.'),
+		       output      = filename.split('.'),
 		       finalOutput = output[0]+'_'+date+alphaRandom()+formatExt;
     
         if(fields.email != '') {
@@ -66,14 +65,18 @@ var upload = function(res, request){
         
         console.log('parsing done ' + date);
        
-        var ffmpeg = spawn('ffmpeg',
-                           ['-y','-i', file, '-acodec', codec, '-ar', sampleRate, '-ac', tracks, '-ab',
-                            rate, '-f', format, finalOutput],childOpts);
-     
-        fs.rename(files.fileToUpload.path, "./data/uploads/" + file, function(err) {
+        //var ffmpeg = spawn('ffmpeg',
+          //                 ['-y','-i', file, '-acodec', codec, '-ar', sampleRate, '-ac', tracks, '-ab',
+           //                 rate, '-f', format, finalOutput],childOpts);
+         
+        fs.rename(file.file.path, "./data/uploads/" + file.file.name, function(err) {
         	console.log('renaming file');
           if(err) console.log(err);
-         	convert(ffmpeg, res, finalOutput, clientEmail, browserDL);
+
+          res.writeHead(200, {'Content-type' : 'type/html'});
+	        res.write('<br /><span>Your file was uploaded successfully!</span>');
+          res.end();
+         	//convert(ffmpeg, res, finalOutput, clientEmail, browserDL);
        	});
     });    
 }
