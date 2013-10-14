@@ -21,6 +21,7 @@
 
         <div class="row" data-ng-controller="UploaderCtrl">
           <form id='form' name='form' method='post' enctype='multipart/form-data' data-ng-switch="downloadOptions">
+            <input type="text" value="<%= token %>" class="hide" data-ng-model="csrf" data-ng-init="csrf = '<%= token %>'" name="csrf">
             <section class="span6">
               <div class="row">
                 <div class="span5">
@@ -119,7 +120,6 @@
           </form>
           <br>
         </div>
-
 
       </div>
   </body>

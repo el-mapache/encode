@@ -17,10 +17,14 @@ app.service('formData', function() {
 
 app.service('uploader', ['$rootScope', function($rootScope) {
   function onComplete(evt) {
+    console.log('done')
+    console.log(evt);
     $rootScope.$broadcast("complete", evt.target.responseText);
   }
 
   function onFailed(evt) {
+    console.log('fail')
+    console.log(evt);
     $rootScope.$broadcast("failed", "An error occurred while uploading the file.");
   }
 
@@ -35,7 +39,7 @@ app.service('uploader', ['$rootScope', function($rootScope) {
   }
 
   return {
-    upload: function(payload) {
+    upload: function(payload,token) {
       var xhr = new XMLHttpRequest();
 
       xhr.open("post", "/upload", true);
@@ -43,8 +47,12 @@ app.service('uploader', ['$rootScope', function($rootScope) {
       xhr.onreadystatechange = function() {
         if (xhr.status === 200 && xhr.readyState === 4) {
           $rootScope.$broadcast("statechange", xhr.responseText);
+        } else {
+          console.log(xhr.status)
         }
       };
+
+      xhr.setRequestHeader("X-CSRF-TOKEN", token);
 
       xhr.upload.addEventListener("progress", onProgress, false);
       xhr.addEventListener("load", onComplete, false);
@@ -67,7 +75,7 @@ app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', funct
   });
 
   $scope.$watch("form.format.$viewValue", function(newValue) {
-    // These settings allow for only the default 256k bit rate,
+    // Choosing flac or ogg as the format allow for only the default 256k bit rate,
     // so we disable the bit rate selector and set its value
     // programmatically
     if (newValue == 'flac.flac' || newValue == 'libvorbis.ogg')  {
@@ -92,22 +100,21 @@ app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', funct
   $scope.submit = function() {
     if ($scope.error.error) $scope.error = {};
     // Add the file to the formData structure
+
     $scope.formData['file'] = $scope.file
-
-    var formData = FormDataService.process($scope.formData);
-
-    UploadService.upload(formData);
+    UploadService.upload(FormDataService.process($scope.formData), $scope.form.csrf.$modelValue);
   };
 }]);
 
 // Drag and Drop module, with plain html input fallback
 angular.module("drag-and-drop", [])
   .controller('DragDropCtrl', ["$rootScope", "$scope", function($rootScope, $scope) {
+
     // Properties
     $scope.dragging = false
     $scope.file = null;
     $scope.error = {};
-    $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/mp4/;
+    $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/x\-wav|audio\/mp4/;
     $scope.dropText = 'Drag an audio file here.';
 
 
@@ -165,6 +172,7 @@ angular.module("drag-and-drop", [])
       }
       
       return (Math.floor($scope.file.size * 100 / 1024) / 100) + 'kb';
+      $scope.$apply();
     };
 
   }]).directive("dnd", function() {
@@ -240,7 +248,7 @@ angular.module("drag-and-drop", [])
       }
     };
   });
-  
+ 
   angular.module('progress-bar', [])
          .controller("ProgressCtrl", ['$rootScope',"$scope", "$timeout", function($rootScope, $scope, $timeout) {
 
@@ -257,6 +265,10 @@ angular.module("drag-and-drop", [])
                 $scope.response = "Your file was uploaded successfully.";
               });
               offComplete();
+            });
+            
+            $rootScope.$on("failed", function(evt, message) {
+              $scope.response = message;
             });
 
             var offProgress = $rootScope.$on("progress", function(evt, bytesLoaded, byteTotal) {
@@ -304,6 +316,4 @@ angular.module("drag-and-drop", [])
             }
           };
         });
-
-console.log(app);
 

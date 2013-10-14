@@ -6,7 +6,7 @@
     <p>File Info</p>
     <ul class="mute">
       <li><b>Name:</b> {{ file.name }}</li>
-      <li><b>Size:</b> {{ hasFile && getFileSize() }}</li>
+      <li><b>Size:</b> {{ file && getFileSize() }}</li>
       <li><b>Format:</b> {{ file.type }}</li>
     </ul>
   </div>
