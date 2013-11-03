@@ -7,8 +7,8 @@
   <link rel='stylesheet' href='css/bootstrap.min.css' />
   <link rel='stylesheet' href='css/style.css' />
   <link rel='stylesheet' href='css/CPMono/stylesheet.css' />
-  <script src="scripts/angular.min.js"></script>
-  <script src="scripts/app.encoder.js"></script>
+  <script src="javascript/angular.min.js"></script>
+  <script src="javascript/app.encoder.js"></script>
 </head>
    <body data-ng-app="encoder">
       <div class='container'>
@@ -49,7 +49,7 @@
                   <li>3. enter an email to send the file or download it straight from your browser!</li>
                 </ul>
               </aside>
-          
+
               <section>
                 <aside class="encodr-gray-bg grid-padding font-uppercase">
                   <h2 class="encodr-indent encodr-black">step 2: choose encode settings</h2>
@@ -58,16 +58,16 @@
                   <div> 
                     <label for='numTracks'>
                       track count:
-                      <select name='numTracks' id='tracks' data-ng-model="formData.tracks" required>
+                      <select name='channels' id='channels' data-ng-model="formData.channels" required>
                         <option></option>
                         <option value='2' selected='selected'>2-channel stereo</option>
                         <option value='1'>single channel mono</option>
                     </label>
 
                     </select>
-                  </div> 
-                  
-                  <div> 
+                  </div>
+
+                  <div>
                     <label class='left' for='format'>output as: </label>
                     <select name='format' id='formats' data-ng-model="formData.format" required>
                       <option></option>
@@ -77,9 +77,9 @@
                       <option id='flac' value='flac.flac'>FLAC</option>
                       <option id='ogg' value='libvorbis.ogg'>OGG</option>
                     </select>
-                  </div> 
+                  </div>
 
-                  <div> 
+                  <div>
                     <label class='left' for='bitRate'>bitrate: </label>
                     <select name='bitRate' id='bRate' data-ng-model="formData.bitrate" data-ng-disabled="!enableBitRate" required>
                       <option></option>

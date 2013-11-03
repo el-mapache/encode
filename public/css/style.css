@@ -184,6 +184,10 @@ label {
   opacity: 1;
 }
 
+.encodr-success {
+  color: #00FF00;
+  margin: 5px 0 5px 0px;
+}
 
 /* METRICS
 ----------------------------*/

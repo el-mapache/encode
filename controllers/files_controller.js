@@ -1,19 +1,36 @@
-var FilesController = function() {
-  return {
-    create: function() {
+var File = require("../models/file.js").file;
+var TranscoderService = require("../services/transcoder_service.js");
 
-    },
+module.exports = {
+  create: function(req, res) {
+    var params, file, transcoder;
 
-    index: function() {
+    params = req.body;
+    params["source"] = req.files.file;
 
-    },
-    
-    download: function() {
-
-    },
-
-    destroy: function() {
-
+    try {
+      file = new File(params);
+    } catch (err) {
+      res.send({status: 500, message: "There was an error uploading your file."});
     }
-  };
+
+    res.send({status: 200, message: "Your file was uploaded successfully."});
+   // transcoder = TranscoderService(file);
+   // transcoder.transcode(function(err, output) {
+   //   if (err) res.send({status: 500, message: err});
+   //   res.send({status: 200, message: "File converted successfully."});
+   // });
+  },
+
+  index: function() {
+
+  },
+  
+  download: function() {
+
+  },
+
+  destroy: function() {
+
+  }
 };

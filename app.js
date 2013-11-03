@@ -3,13 +3,12 @@ var express = require("express");
 var app = express();
 var server = http.createServer(app);
 var settings = require("./configs.js").settings;
-var transcoder = require("./services/transcoder_service.js");
+var helpers = require("./lib/support_functions.js");
+var FilesController = require("./controllers/files_controller.js");
 
 var csrfValue = function(req) {
-  return (req.body && req.body._csrf) || 
-         (req.query && req.query._csrf) || 
-         (req.headers['x-csrf-token']) || 
-         (req.headers['x-xsrf-token']);
+  return (req.body && req.body._csrf) || (req.query && req.query._csrf) || 
+         (req.headers['x-csrf-token']) || (req.headers['x-xsrf-token']);
 };
 
 app.configure(function() {
@@ -28,26 +27,7 @@ app.get("/", function(req,res) {
   res.render(__dirname+"/index.html");
 });
 
-app.post("/upload", function(req, res) {
-  transcoder.transcode({
-    source: req.files.file.path,
-    bitRate: req.body.bitrate,
-    channels: req.body.tracks,
-    codec: req.body.format,
-    samplerate: req.body.samplerate
-  }, function(proc) {
-    proc.
-      onProgress(function(progress) {
-      console.log(progress)
-    });
-//    saveToFile(__dirname + '/dummy'+ options.codec.split('.')[1], function(stdout, stderr) {
-//      console.log(stderr)
-//      console.log(stdout)
-//      console.log('file has been converted succesfully');
-//      res.end("done");
-    //});
-  });
-});
+app.post("/upload", FilesController.create); 
 
 app.get("/download", function(req, res) {
 
