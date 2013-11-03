@@ -101,12 +101,13 @@
                     </select>
                   </div> 
 
-                  <div data-ng-show="!email"> 
+                  <p class="encodr-error" data-ng-show="needsDownload">Please select a download option</p>
+                  <div data-ng-show="!formData.email">
                     <label for='noEmail'>download immediately:</label>
                     <input type='checkbox' data-ng-model="formData.download" name='download' id='noEmail'>
                   </div> 
 
-                  <div id='for-email' class='left' data-ng-show="!download">
+                  <div id='for-email' class='left' data-ng-show="!formData.download">
                     <label for='email'>Send file to: </label>
                     <input data-ng-change="validateEmail($event)" data-ng-model="formData.email" type="email" name="email" id="email" placeholder="example@internetmail.com">
                   </div>

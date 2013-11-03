@@ -27,7 +27,7 @@ app.service('formData', function() {
 /*
  * This service provides a wrapper for the native XMLHttp request.
  * When I wrote this, jQuery did not have support for asynchronous file
- * transfer, and it may still lack this functionality.
+ * transfers, and it may still lack this functionality.
  *
  * Service communicates with the rest of the app by broadcasting its events through
  * the RootScope
@@ -40,11 +40,16 @@ app.service('formData', function() {
  */
 app.service('uploader', ['$rootScope', function($rootScope) {
   function onComplete(evt) {
-    $rootScope.$broadcast("complete", JSON.parse(evt.target.responseText));
+    var response = JSON.parse(evt.target.responseText);
+
+    if (/(4\d{2}|5\d{2})/.test(response.status)) {
+      $rootScope.$broadcast("failed", response.message);
+    } else {
+      $rootScope.$broadcast("complete", response.message);
+    }
   }
 
   function onFailed(evt) {
-    $rootScope.$broadcast("failed", "Something went wrong with your upload.");
   }
 
   function onCanceled(evt) {
@@ -96,7 +101,13 @@ app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', funct
   $scope.$watch('form.email.$viewValue', function(newValue, oldValue) {
     if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(newValue))) {
       $scope.form.email.$invalid = true;
+    } else {
+      $scope.needsDownload = false;
     }
+  });
+
+  $scope.$watch("form.download.$viewValue", function(newValue, oldValue) {
+    if (newValue) $scope.needsDownload = false;
   });
 
   $scope.$watch("form.format.$viewValue", function(newValue) {
@@ -124,11 +135,20 @@ app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', funct
     return $scope.file === true;
   };
 
+  $scope.hasDownloadOption = function() {
+    return $scope.formData.download || $scope.formData.email;
+  };
+
   $scope.submit = function() {
-    if ($scope.error.error) $scope.error = {};
+    if (!$scope.hasDownloadOption()) {
+      return $scope.needsDownload = true;
+    }
+
+    $scope.error = {};
 
     // Add the file to the formData structure
     $scope.formData['file'] = $scope.file
+
     UploadService.upload(FormDataService.process($scope.formData), $scope.form.csrf.$modelValue);
   };
 }]);
@@ -268,7 +288,7 @@ angular.module("drag-and-drop", [])
           });
         };
       },
-      
+
       link: function(scope, elem, attrs) {
         scope.input = elem.find('input');
         scope.input.bind('change', scope.setFile);
@@ -278,7 +298,7 @@ angular.module("drag-and-drop", [])
 
   angular.module('progress-bar', []).controller("ProgressCtrl", ['$rootScope',"$scope", function($rootScope, $scope) {
     $rootScope.$on("file", $scope.reset);
-    $scope.success; 
+
     $scope.reset = function() {
       $scope.response = "";
       $scope.uploading = false;
@@ -294,6 +314,7 @@ angular.module("drag-and-drop", [])
     // When a listener is generated it is wrapped in a function.
     // To remove a listener, save it to a variable on creation and then call that
     // variable as a function to execute.
+    // Ex var myHandler = $scope.$on("event", function() { //perform magic; myHandler(); });
     $rootScope.$on("complete", function(evt, response) {
       $scope.$apply(function() {
         $scope.response = response.message;
