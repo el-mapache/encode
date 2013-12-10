@@ -1,132 +1,45 @@
-var app = angular.module('encoder',['drag-and-drop','progress-bar']);
+var app = angular.module('encoder',
+  [
+    'FormData',
+    'Uploader',
+    'drag-and-drop',
+    'progress-bar'
+  ]
+);
 
-/*
- * Simple service that accepts an object of key value pairs,
- * representing information entered into a form.
- * Constructs a new FormData object, populates and returns it
- *
- * Public API
- * process: Passed a single object of form data, loops through and creates
- * a new FormData object.
- */
-app.service('formData', function() {
-  return {
-    process: function(formData) {
-      var fd = new FormData();
-
-      // Loop thru form object and populate FormData instance
-      angular.forEach(formData, function(value, key) {
-        fd.append(key, value);
-      });
-
-      return fd;
-    }
-  };
-});
-
-/*
- * This service provides a wrapper for the native XMLHttp request.
- * When I wrote this, jQuery did not have support for asynchronous file
- * transfers, and it may still lack this functionality.
- *
- * Service communicates with the rest of the app by broadcasting its events through
- * the RootScope
- *
- * This service provides a single public method, "upload"
- *
- * Upload:
- * @param {payload} FormData Object
- * @param {token} String: CSRF token
- */
-app.service('uploader', ['$rootScope', function($rootScope) {
-  function onComplete(evt) {
-    var response = JSON.parse(evt.target.responseText);
-
-    if (/(4\d{2}|5\d{2})/.test(response.status)) {
-      $rootScope.$broadcast("failed", response.message);
-    } else {
-      $rootScope.$broadcast("complete", response.message);
-    }
-  }
-
-  function onFailed(evt) {
-  }
-
-  function onCanceled(evt) {
-    $rootScope.$broadcast("failed", "The upload has been canceled by the user or the browser dropped the connection.");
-  }
-
-  function onProgress(evt) {
-    if (evt.lengthComputable) {
-      $rootScope.$broadcast("progress", evt.loaded, evt.total);
-    }
-  }
-
-  return {
-    upload: function(payload,token) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.open("post", "/upload", true);
-
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            console.log('yay')
-          } else if (/(^4\d{2}|^5\d{2})/.test(xhr.status)) {
-            xhr.upload.removeEventListener("progress");
-          }
-        }
-      };
-
-      // Express expects a token, so set it here
-      xhr.setRequestHeader("X-CSRF-TOKEN", token);
-      xhr.upload.addEventListener("progress", onProgress, false);
-      xhr.addEventListener("load", onComplete, false);
-      xhr.addEventListener("error", onFailed, false);
-      xhr.addEventListener("abort", onCanceled, false);
-
-      xhr.send(payload);
-    }
-  };
-}]);
-
-app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', function($scope, FormDataService, UploadService, $http) {
+app.controller('UploaderCtrl', [
+  '$scope',
+  'FormData',
+  'Uploader',
+  '$http',
+function($scope, FormDataService, UploadService, $http) {
   $scope.enableBitRate = true;
 
   // This object will hold all the values the user enters in the upload form
   $scope.formData = {};
 
-  // Everytime the email field changes, evaluate it against this regex to
-  // determine its validity.
-  $scope.$watch('form.email.$viewValue', function(newValue, oldValue) {
-    if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(newValue))) {
-      $scope.form.email.$invalid = true;
-    } else {
-      $scope.needsDownload = false;
-    }
-  });
-
-  $scope.$watch("form.download.$viewValue", function(newValue, oldValue) {
-    if (newValue) $scope.needsDownload = false;
-  });
-
+  /*
+   * Looks for changes to the format and displays different options accordingly
+  */
   $scope.$watch("form.format.$viewValue", function(newValue) {
-    // Choosing flac or ogg as the format allow for only the default 256k bit rate,
-    // so we disable the bit rate selector and set its value
-    // programmatically
+    // Choosing flac or ogg as the format allows for only the default 256k bit rate,
+    // so we disable the bit rate selector and set its value programmatically.
+
     if (newValue == 'flac.flac' || newValue == 'libvorbis.ogg')  {
       $scope.toggleEnableBitRate();
       $scope.form.bitRate.$setViewValue(256000);
     } else {
       if (!$scope.enableBitRate) {
+
         // enable the bit rate field and reset its value
+
         $scope.toggleEnableBitRate();
         $scope.form.bitRate.$setViewValue(undefined);
       }
     }
   });
 
-  // Enables and disables the bit rate select field
+  // Enables and disables the bitrate select element
   $scope.toggleEnableBitRate = function() {
     return $scope.enableBitRate = !$scope.enableBitRate;
   };
@@ -135,15 +48,7 @@ app.controller('UploaderCtrl', ['$scope', 'formData', 'uploader', '$http', funct
     return $scope.file === true;
   };
 
-  $scope.hasDownloadOption = function() {
-    return $scope.formData.download || $scope.formData.email;
-  };
-
   $scope.submit = function() {
-    if (!$scope.hasDownloadOption()) {
-      return $scope.needsDownload = true;
-    }
-
     $scope.error = {};
 
     // Add the file to the formData structure
@@ -163,7 +68,6 @@ angular.module("drag-and-drop", [])
     $scope.error = {};
     $scope.allowedFileTypes = /audio\/mp3|audio\/wav|audio\/x\-wav|audio\/mp4/;
     $scope.dropText = 'Drag an audio file here.';
-
 
 
     // Wrapped for convienience
@@ -303,19 +207,26 @@ angular.module("drag-and-drop", [])
       $scope.response = "";
       $scope.uploading = false;
       $scope.success = false;
-      $scope.progress = "0px";  
+      $scope.progress = "0px";
       $scope.bytesTransfered = null;
       $scope.percent = null;
     };
 
     $scope.reset();
 
-    // Angular doesn't have an explicit 'off' method to call on event listeners.
-    // When a listener is generated it is wrapped in a function.
-    // To remove a listener, save it to a variable on creation and then call that
-    // variable as a function to execute.
-    // Ex var myHandler = $scope.$on("event", function() { //perform magic; myHandler(); });
+    /* Angular doesn't have an explicit 'off' method to call on event listeners.
+     * When a listener is generated it is wrapped in a function.
+     * To remove a listener, save it to a variable on creation and then call that
+     * variable as a function to execute.
+     *
+     * Ex. var myHandler = $scope.$on("event", function() { 
+     *       //perform magic;
+     *       myHandler();
+     *     });
+    */
+
     $rootScope.$on("complete", function(evt, response) {
+      // The upload is finished successfully.
       $scope.$apply(function() {
         $scope.response = response.message;
         $scope.success = true;
@@ -323,6 +234,8 @@ angular.module("drag-and-drop", [])
     });
 
     $rootScope.$on("failed", function(evt, message) {
+      // The upload has failed.
+
       $scope.$apply(function() {
         $scope.reset();
         $scope.response = message;
@@ -354,6 +267,7 @@ angular.module("drag-and-drop", [])
       $scope.progress = (percentComplete * 3.55) + 'px';
       $scope.percent = percentComplete + "%";
     };
+
      }]).directive('progressBar', function() {
       return {
         restrict: "AE",
@@ -361,15 +275,7 @@ angular.module("drag-and-drop", [])
         templateUrl: "../templates/progress.html",
         controller: 'ProgressCtrl',
         scope: false,
-       // scope: {
-        //  "uploading": "@uploading",
-       //   "response": "@response",
-      //    "success": "@success"
-        //  "percent": "@percent",
-        //  "progress": "@progress"
-       // },
-        link: function(scope, elem, attrs) {
-        }
+        link: function(scope, elem, attrs) {}
       };
     });
 

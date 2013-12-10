@@ -7,7 +7,7 @@ var helpers = require("./lib/support_functions.js");
 var FilesController = require("./controllers/files_controller.js");
 
 var csrfValue = function(req) {
-  return (req.body && req.body._csrf) || (req.query && req.query._csrf) || 
+  return (req.body && req.body._csrf) || (req.query && req.query._csrf) ||
          (req.headers['x-csrf-token']) || (req.headers['x-xsrf-token']);
 };
 
@@ -21,13 +21,14 @@ app.configure(function() {
 });
 
 server.listen(9000);
+console.log("Server listening at port 9000");
 
 app.get("/", function(req,res) {
   res.locals.token = req.csrfToken();
   res.render(__dirname+"/index.html");
 });
 
-app.post("/upload", FilesController.create); 
+app.post("/upload", FilesController.create);
 
 app.get("/download", function(req, res) {
 

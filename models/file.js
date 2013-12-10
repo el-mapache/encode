@@ -5,7 +5,6 @@ function File(params) {
     throw new Error("Invalid arguments supplied. Source, format, number of channels, bit and sample rates must be specified.");
   }
 
-  // Private functions
   function formatName(name) {
     return name.split(".")[0];
   }
