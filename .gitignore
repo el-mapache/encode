@@ -1,5 +1,6 @@
-node_modules
-configs.js
+node_modules/*
+config/app-settings.js
+config/redis.js
 npm-debug.log
 .DS_Store
 data/*
