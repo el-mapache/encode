@@ -1,0 +1,9 @@
+<div id="progress" class="encodr-gray-bg">
+  <h3>Upload Progress</h3>
+  <div><p class="encodr-{{success && 'success' || 'error'}}">{{ response }}<p></div>
+  <div data-ng-class="{in: uploading}" class="fade">
+    <div>Total Transfered: {{ bytesTransfered }}</div>
+    <div id="progressBar" data-ng-style="{'width': progress}">{{ percent }}</div>
+    <br>
+  </div>
+</div>
