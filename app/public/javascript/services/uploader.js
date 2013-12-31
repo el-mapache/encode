@@ -22,25 +22,52 @@ function($rootScope) {
   STATUS_REGEX = /^[45]\d{2}/;
 
   function onComplete(evt) {
-    var response = evt.currentTarget;
+    var response = JSON.parse(evt.currentTarget.response);
 
     // If the uploader encounters an error, pass along the error name
     if (STATUS_REGEX.test(response.status)) {
-      $rootScope.$broadcast("failed", response.statusText);
-    } else { 
-      $rootScope.$broadcast("complete", response.responseText);
+      return $rootScope.$broadcast("upload:failed", response.message);
     }
+
+    $rootScope.$broadcast("upload:complete", response.message);
+
+    var poll = function(token, done) {
+
+      var xhr = new XMLHttpRequest();
+
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var progress = JSON.parse(xhr.response).response.progress;
+
+          if (progress == 100) return done(false, 100);
+
+          return done(true, progress);
+        }
+      };
+
+      xhr.open("get", "/info/"+token, true);
+      xhr.send();
+
+    };
+
+    var done = function(valid, progress) {
+      $rootScope.broadcast("transcoding:progress", progress);
+      if (valid) poll(response.token, done);
+    };
+
+    poll(response.token, done);
   }
 
   function onFailed(evt) {}
 
   function onCanceled(evt) {
-    $rootScope.$broadcast("failed", "The upload has been canceled by the user or the browser dropped the connection.");
+    $rootScope.$broadcast("upload:failed", "The upload has been canceled by the user or the browser dropped the connection.");
   }
 
   function onProgress(evt) {
     if (evt.lengthComputable) {
-      $rootScope.$broadcast("progress", evt.loaded, evt.total);
+      $rootScope.$broadcast("upload:progress", evt.loaded, evt.total);
     }
   }
 
@@ -56,21 +83,22 @@ function($rootScope) {
     upload: function(payload,token) {
       var xhr = new XMLHttpRequest();
 
-      xhr.open("post", "/upload", true);
 
       xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          clearEvents(xhr);
-        }
+          //clearEvents(xhr);
+  //        console.log(xhr)
+    //      console.log(xhr.responseText);
       };
 
       // Express expects a token, so set it here
-      xhr.setRequestHeader("X-CSRF-TOKEN", token);
       xhr.upload.addEventListener("progress", onProgress, false);
       xhr.addEventListener("load", onComplete, false);
       xhr.addEventListener("error", onFailed, false);
       xhr.addEventListener("abort", onCanceled, false);
 
+      xhr.open("post", "/upload", true);
+
+      xhr.setRequestHeader("X-CSRF-TOKEN", token);
       xhr.send(payload);
     }
   };

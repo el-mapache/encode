@@ -17,3 +17,5 @@ wget http://prdownloads.sourceforge.net/faac/faac-1.24.tar.gz?download
 Config setting for MacOSX/Linux (your mileage may vary)
 
 --enable-libfaac --enable-libx264 --enable-libxvid --enable-nonfree --enable-gpl --enable-libmp3lame --enable-pthreads --enable-libvpx --enable-libvorbis --disable-mmx --arch=x86_32 --enable-shared --enable-libtheora --pkg-config=pkg-config --enable-version3
+
+(samplerate * 2 * (bitrate/8) * seconds) / 1024	

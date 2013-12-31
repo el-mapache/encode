@@ -3,20 +3,16 @@
 */
 
 var kue = require("kue"),
-    redis = require("redis"),
-    jobQueue;
+    redis = require("redis");
 
 module.exports = function(port, redisConfigs, app) {
   kue.redis.createClient = function() {
     return redis.createClient(redisConfigs.port, redisConfigs.host);
   };
 
-  jobQueue = kue.createQueue();
-
   kue.app.listen(port);
 
   console.log("Queue created on port %d", port);
-
-  return jobQueue;
+  return kue.createQueue();
 };
 

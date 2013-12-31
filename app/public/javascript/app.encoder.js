@@ -3,7 +3,8 @@ var app = angular.module('encoder',
     'FormData',
     'Uploader',
     'drag-and-drop',
-    'progress-bar'
+    'progress-bar',
+    'audio-tag'
   ]
 );
 
@@ -14,6 +15,9 @@ app.controller('UploaderCtrl', [
   '$http',
 function($scope, FormDataService, UploadService, $http) {
   $scope.enableBitRate = true;
+  
+  // Set select tag defaults
+  //$scope.form.bitRate = 256000
 
   // This object will hold all the values the user enters in the upload form
   $scope.formData = {};
@@ -47,12 +51,17 @@ function($scope, FormDataService, UploadService, $http) {
   $scope.isFilePresent = function() {
     return $scope.file === true;
   };
+  
+  $scope.$on("encoderAudioTag:fileLength", function(evt, fileLength) {
+    $scope.fileTimeInSeconds = fileLength;
+  });
 
   $scope.submit = function() {
     $scope.error = {};
 
     // Add the file to the formData structure
     $scope.formData['file'] = $scope.file
+    $scope.formData['fileTimeInSeconds'] = $scope.fileTimeInSeconds;
 
     UploadService.upload(FormDataService.process($scope.formData), $scope.form.csrf.$modelValue);
   };
@@ -115,7 +124,7 @@ angular.module("drag-and-drop", [])
 
       if ($scope.error.error) $scope.error = {}; 
 
-      $rootScope.$broadcast("file");
+      $rootScope.$broadcast("dragAndDrop:validFile", $scope.file);
     };
 
     $scope.getFileSize = function() {
@@ -225,24 +234,22 @@ angular.module("drag-and-drop", [])
      *     });
     */
 
-    $rootScope.$on("complete", function(evt, response) {
-      // The upload is finished successfully.
+    $rootScope.$on("upload:complete", function(evt, message) {
+      // The upload finished successfully.
       $scope.$apply(function() {
-        $scope.response = response.message;
+        $scope.response = message;
         $scope.success = true;
       });
     });
 
-    $rootScope.$on("failed", function(evt, message) {
-      // The upload has failed.
-
+    $rootScope.$on("upload:failed", function(evt, message) {
+      // The upload failed.
       $scope.$apply(function() {
-        $scope.reset();
         $scope.response = message;
       });
     });
 
-    $rootScope.$on("progress", function(evt, bytesLoaded, byteTotal) {
+    $rootScope.$on("upload:progress", function(evt, bytesLoaded, byteTotal) {
       $scope.$apply(function() {
         if (!$scope.uploading) $scope.uploading = !$scope.uploading;
 
