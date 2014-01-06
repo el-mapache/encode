@@ -17,7 +17,7 @@ progress.controller("ProgressCtrl", [
 
     $scope.reset();
 
-    $rootScope.$on("upload:complete", function(evt, message) {
+    $rootScope.$on("Uploader:complete", function(evt, message) {
       // The upload finished successfully.
       $scope.$apply(function() {
         $scope.response = message;
@@ -25,14 +25,14 @@ progress.controller("ProgressCtrl", [
       });
     });
 
-    $rootScope.$on("upload:failed", function(evt, message) {
+    $rootScope.$on("Uploader:failed", function(evt, message) {
       // The upload failed.
       $scope.$apply(function() {
         $scope.response = message;
       });
     });
 
-    $rootScope.$on("upload:progress", function(evt, bytesLoaded, byteTotal) {
+    $rootScope.$on("Uploader:progress", function(evt, bytesLoaded, byteTotal) {
       $scope.$apply(function() {
         if (!$scope.uploading) $scope.uploading = !$scope.uploading;
 

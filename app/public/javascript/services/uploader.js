@@ -13,61 +13,47 @@
  * @param {token} String: CSRF token
  */
 
-var module = angular.module("Uploader", []);
+var module = angular.module("Uploader", ["Poll"]);
 
 module.service('Uploader', [
   '$rootScope',
-  function($rootScope) {
+  'Poll',
+  function($rootScope, Poll) {
   
     STATUS_REGEX = /^[45]\d{2}/;
 
+    // Callback function to be executed after file upload has finished.
     function onComplete(evt) {
       var response = JSON.parse(evt.currentTarget.response);
 
       // If the uploader encounters an error, pass along the error name
       if (STATUS_REGEX.test(response.status)) {
-        return $rootScope.$broadcast("upload:failed", response.message);
+        return $rootScope.$broadcast("Uploader:failed", response.message);
       }
 
-      $rootScope.$broadcast("upload:complete", response.message);
-
-      var poll = function(token, done) {
-
-        var xhr = new XMLHttpRequest();
-
-
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            var progress = JSON.parse(xhr.response).response.progress;
-
-            if (progress == 100) return done(false, 100);
-
-            return done(true, progress);
-          }
-        };
-
-        xhr.open("get", "/info/"+token, true);
-        xhr.send();
-
-      };
+      $rootScope.$broadcast("Uploader:complete", response.message);
 
       var done = function(valid, progress) {
-        $rootScope.$broadcast("transcoding:progress", progress);
-        if (valid) poll(response.token, done);
+        // Emit the transcoder's progress
+        $rootScope.$emit("Poll:progress", progress);
+
+        if (valid) Poll.poll(response.token, done);
       };
 
-      poll(response.token, done);
+      // Call the initial poll
+      Poll.poll(response.token, done);
+
     }
 
     function onFailed(evt) {}
 
     function onCanceled(evt) {
-      $rootScope.$broadcast("upload:failed", "The upload has been canceled by the user or the browser dropped the connection.");
+      $rootScope.$broadcast("Uploader:failed", "The upload has been canceled by the user or the browser dropped the connection.");
     }
 
     function onProgress(evt) {
       if (evt.lengthComputable) {
-        $rootScope.$broadcast("upload:progress", evt.loaded, evt.total);
+        $rootScope.$broadcast("Uploader:progress", evt.loaded, evt.total);
       }
     }
 
@@ -85,9 +71,9 @@ module.service('Uploader', [
 
 
         xhr.onreadystatechange = function() {
-            //clearEvents(xhr);
-    //        console.log(xhr)
-      //      console.log(xhr.responseText);
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            clearEvents(xhr);
+          }
         };
 
         // Express expects a token, so set it here
