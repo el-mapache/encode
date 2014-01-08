@@ -5,10 +5,9 @@ var express = require('express');
 var app = express();
 var server = http.createServer(app);
 
-var settings = require('./config/app-settings.js').settings;
-var redisConfigs = require('./config/redis.js').settings;
+var settings = require('./config/app-settings.js').settings[app.settings.env];
+var redisConfigs = require('./config/redis.js');
 
-var helpers = require('./lib/support_functions.js');
 
 // If would be nice if this simply started a daemon process that could
 // listen for command line arguments, and then initialize, clear, restart, etc.
@@ -45,7 +44,12 @@ app.get('/', function(req,res) {
 app.post('/upload', FilesController.create);
 app.get('/info/:token', ProgressController.get);
 
-app.get('/download', function(req, res) {
+app.get('/download/:token', function(req, res) {
 
 });
 
+GLOBAL.Queue.on('register callback', function(email) {
+  new EmailWorker(email, function(job) {
+    console.log("Job type %s with id of %d saved.", job.type, job.id);
+  });
+});

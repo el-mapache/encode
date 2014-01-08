@@ -18,7 +18,8 @@ var FilesController = function() {
         }
 
         var worker = new TranscodeWorker(file, params.email)
-
+        
+        //
         worker.perform(function(job) {
           req.session["token"] = job.id
 
