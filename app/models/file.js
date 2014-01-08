@@ -25,7 +25,7 @@ function File(params) {
 File.prototype.rename = function() {
   var name = this.source.name.split(".")[0];
 
-  return [name.replace(/[-\s()]/g,"_"), "_", +new Date, ".", this.originalFormat].join("");
+  return [name.replace(/[-\s()]/g,"_"), "_", +new Date, "."].join("");
 }
 
 /* Attempt to permanantly store the file in the uploads directory.
@@ -40,7 +40,7 @@ File.prototype.save = function(done) {
     return done("Invalid arguments supplied. Source, format, number of channels, bit and sample rates must be specified.");
   }
 
-  var newPath = GLOBAL.dirname + "/data/uploads/" + this.normalizedName;
+  var newPath = GLOBAL.dirname + "/data/uploads/" + this.normalizedName + this.originalFormat;
 
   fs.rename(this.source.path, newPath, function(err) {
     done(err);

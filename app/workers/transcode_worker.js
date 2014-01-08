@@ -19,11 +19,13 @@ TranscodeWorker.prototype.perform = function(onSave) {
 
   Queue.jobQueue.on('job complete', function(id) {
     Queue.remove(id);
+  }).on('job failed', function(id) {
+    Queue.retry(id); 
   });
 
   Queue.enqueue(this.type, transcodeParams, function(job) {
-    doStuff(file);
     onSave(job);
+    doStuff(file);
   });
 };
 
@@ -32,14 +34,9 @@ function doStuff(file) {
   Queue.jobQueue.process("transcode", function(job, done) {
     console.log("processing");
 
-    job.on("failure", function() {
-      console.log("job failed");
-      res.send({status: 500, message: "Job failed."});
-    }).on("progress", function(progress) {
-      console.log(progress);
+    job.on("failed", function(id) {
+      done();
     }).on("complete", function(id) {
-      console.log('job done');
-      console.log(id);
       done();
     });
 
@@ -49,20 +46,22 @@ function doStuff(file) {
      * Callback function to report output of ffmpeg.
      * @param{err} javascript error message
      * @param{output} Integer either the progress of the transcoding or a successful exit code.
-    */
+     *
+    **/
     transcoder.transcode(function(err, output) {
       if (err) {
-        console.log("Error transcoding file");
-        return done();
+        console.log('Error transcoding file.');
+        return job.emit('failed', job.id);
       }
 
-      /* 
-       * Check if we have received an exit code of true from ffmpeg,
+      /*
+       * Check if we have received an exit code of true from ffmpeg.
        * if so, the processing is finished.
-      */
+       *
+      **/
       if (output == 0) {
         job.progress(+file.timeInSeconds, +file.timeInSeconds);
-        return job.emit("complete", job.id);
+        return job.emit('complete', job.id);
       }
 
       // Update the job's progress
@@ -71,5 +70,6 @@ function doStuff(file) {
   });
 
 }
+
 module.exports = TranscodeWorker;
 

@@ -14,6 +14,7 @@ module.service("Poll", function($rootScope) {
 
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
+
           // Percentage of the completed job.
           var progress = JSON.parse(xhr.response).response.progress;
 
