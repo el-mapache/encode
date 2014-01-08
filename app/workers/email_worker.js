@@ -12,14 +12,27 @@ do {
   console.log("while loop error?: %s", err);
 }));
 
-var EmailWorker = function(to, token) {
+var EmailWorker = function(to) {
   this.type = 'email';
 
   this.to = link;
   this.link = function() {
-    return ""; 
   };
 }
+
+EmailWorker.prototype.setDownloadToken = function() {
+  var self = this;
+
+  redis.exists(helpers.base62Random(), function(err, exists) {
+    if (exists) return self.setDownloadToken();
+
+    redis.write(key, ""), function(err) {
+      if (err) throw err;
+
+      return "";
+    });
+  });
+};
 
 EmailWorker.prototype.perform = function(onSave) {
   var self = this;

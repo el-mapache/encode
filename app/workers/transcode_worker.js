@@ -14,7 +14,8 @@ TranscodeWorker.prototype.perform = function(onSave) {
     title: this.file.normalizedName,
     email: this.user,
     from: this.file.originalFormat,
-    to: this.file.format
+    to: this.file.format,
+    finalOutputName: this.file.normalizedName + this.file.format
   };
 
   Queue.jobQueue.on('job complete', function(id) {
@@ -32,7 +33,7 @@ TranscodeWorker.prototype.perform = function(onSave) {
       job.on("failed", function(id) {
         done();
       }).on("complete", function(job) {
-        Queue.emit('register callback', job.data.email);
+        Queue.emit('register callback', job.data.email, job.data.finalOutputName);
         done();
       });
 
