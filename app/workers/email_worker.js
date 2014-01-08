@@ -12,27 +12,26 @@ do {
   console.log("while loop error?: %s", err);
 }));
 
-var EmailWorker = function(to) {
-  this.type = 'email';
-
-  this.to = link;
-  this.link = function() {
-  };
-}
-
-EmailWorker.prototype.setDownloadToken = function() {
+var EmailWorker = function(to, targetFile) {
   var self = this;
 
-  redis.exists(helpers.base62Random(), function(err, exists) {
-    if (exists) return self.setDownloadToken();
+  this.type = 'email';
+  
+  this.to = to;
+  this.targetFile = targetFile;
 
-    redis.write(key, ""), function(err) {
-      if (err) throw err;
-
-      return "";
+  function next(token) {
+    client.exists(token, function(err, exists) {
+      if (exists) return next(helpers.base62Random());
+      
+      client.write(token, self.targetFile);
+      self.link = "http://localhost:9000/download/" + token;
+      return true;
     });
-  });
-};
+  };
+
+  next(helpers.base62Random());
+}
 
 EmailWorker.prototype.perform = function(onSave) {
   var self = this;
@@ -59,9 +58,13 @@ EmailWorker.prototype.perform = function(onSave) {
         Queue.emit('register callback', job.data.email);
         done();
       });
+      
+
     });
+    
   });
 
 };
 
 module.exports = EmailWorker;
+

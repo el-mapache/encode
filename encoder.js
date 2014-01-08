@@ -48,8 +48,8 @@ app.get('/download/:token', function(req, res) {
 
 });
 
-GLOBAL.Queue.on('register callback', function(email) {
-  new EmailWorker(email, function(job) {
+GLOBAL.Queue.on('register callback', function(email, filename) {
+  new EmailWorker(email, filename, function(job) {
     console.log("Job type %s with id of %d saved.", job.type, job.id);
   });
 });
