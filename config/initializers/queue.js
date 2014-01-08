@@ -1,8 +1,10 @@
 var Queue = require(GLOBAL.dirname + "/lib/queue.js");
 
 module.exports = function(port, redisConfigs, app) {
-  var queue = new Queue(port, redisConfigs, app, true);
+  var namespaces = ['email', 'transcode'];
 
-  return queue.createQueue();
+  GLOBAL.Queue = new Queue(port, namespaces, redisConfigs, true);
+
+  return true;
 };
 

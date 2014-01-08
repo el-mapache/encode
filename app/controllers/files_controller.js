@@ -1,7 +1,7 @@
-var File = require("../models/file.js");
-var TranscoderService = require("../services/transcoder_service.js");
+var File = require(GLOBAL.dirname + '/app/models/file.js');
+var TranscodeWorker = require(GLOBAL.dirname + '/app/workers/transcode_worker.js');
 
-var FilesController = function(Queue) {
+var FilesController = function() {
   return {
     create: function(req, res) {
       var params, file, transcoder;
@@ -13,68 +13,23 @@ var FilesController = function(Queue) {
 
       file.save(function(err) {
         if (err) {
+          // The file wasn't saved to the filesystem
           return res.send({status: 500, message: err});
         }
 
-        var job = Queue.create("transcode", {
-          title: file.normalizedName,
-          email: params.email,
-          from: file.originalFormat,
-          to: file.format
-        })
+        var worker = new TranscodeWorker(file, params.email)
 
-        job.save(function() {
+        worker.perform(function(job) {
           req.session["token"] = job.id
+
           res.send(JSON.stringify({
             status: 200, 
-            message: "Your file was uploaded successfully.", 
+            message: "Your file was uploaded successfully.",
             token: job.id
           }));
         });
-
-        Queue.process("transcode", function(job, done) {
-
-          console.log("processing");
-          job.on("complete", function(id) {
-            console.log("Job number "+id+" complete");
-
-//            job.remove();
-            res.write(JSON.stringify({status: 200, message: "File converted successfully."}));
-            res.end();
-          });
-
-          job.on("failure", function() {
-            console.log("job failed");
-            res.send({status: 500, message: err});
-          });
-
-          transcoder = TranscoderService(file);
-
-          /*
-           * Callback function to report output of ffmpeg.
-           * @param{err} javascript error message
-           * @param{output} Integer either the progress of the transcoding or a successful exit code.
-          */
-          transcoder.transcode(function(err, output) {
-            if (err) {
-              console.log("Error transcoding file");
-              return done();
-            }
-
-            /* 
-             * Check if we have received an exit code of true from ffmpeg,
-             * if so, the processing is finished.
-            */
-            if (output == 0) {
-              job.progress(+file.timeInSeconds, +file.timeInSeconds);
-              return job.emit("complete", job.id);
-            }
-
-            // Update the job's progress
-            job.progress(+output, +file.timeInSeconds);
-          });
-        });
       });
+
 
     },
 
