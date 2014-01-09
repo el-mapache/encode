@@ -1,33 +1,40 @@
-var node_email = require('nodemailer');
-var settings = require(GLOBAL.dirname + '/config/app-settings.js');
+var mailer = require('nodemailer');
+var settings = require(GLOBAL.dirname + '/config/app-settings.js')[GLOBAL.env];
 
-function emailer(to, link, plain) {
-  console.log('Emailer called, verification: ' + link);
-  console.log(settings.settings.userName);
-  node_email.SMTP = {
-      host: "smtp.gmail.com",
-      port: 465,
-      ssl: true,
-      use_authentication: true,
-      user: settings.settings.userName,
-      pass: settings.settings.passWord
-  }
-      console.log(node_email.SMTP);      
-  node_email.send_mail({    
-      to: to,
-      sender: "nodebot@nodetest.com",
-      subject: "You've recieved a converted audio file.",
-      body: "Click this link to go to your audio file download page. Files expire after one hour." + plain,
-      html: '<div><p>This link will take you to your download page.&nbsp;&nbsp;'+link+'</p></div>'
-    },
-    
-    function(err, result) {
-      if(err) {
-        console.log('emailer encountered an error: ' + err);
-      } else console.log('Message ok: ' + result);
-     
+var EmailService = function(to, link) {
+  this.to = to;
+  this.link = link;
+
+  this.mailer = mailer;
+};
+
+EmailService.prototype.mail = function(done) {
+  var smtpTransport = this.mailer.createTransport("SMTP", {
+    service: "Gmail",
+    auth: {
+      user: settings.email.user,
+      pass: settings.email.password
+    }
   });
-}
 
-exports.emailer = emailer;
+  smtpTransport.sendMail({
+    to: this.to,
+    from: "adam.biagianti@gmail.com",
+    subject: "You've received a converted audio file.",
+    text: "Click this link to go to your audio file download page. Files expire after one hour.",
+    html: '<div><p>This link will take you to your download page.&nbsp;&nbsp;'+this.link+'</p></div>'
+  },
+
+  function(err, result) {
+    if(err) {
+      console.log('emailer encountered an error: ' + err);
+      done(err);
+    } else {
+      console.log('Message ok: ' + result);
+      done(null, result);
+    }
+  });
+};
+
+module.exports = EmailService;
 

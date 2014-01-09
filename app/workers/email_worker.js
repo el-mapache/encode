@@ -4,6 +4,7 @@ var helpers = require(GLOBAL.dirname + '/lib/support_functions.js');
 
 var Redis = require(GLOBAL.dirname + '/lib/redis.js');
 var client = new Redis();
+
 var EmailWorker = function(to, targetFile) {
   var self = this;
 
@@ -12,21 +13,15 @@ var EmailWorker = function(to, targetFile) {
   this.to = to;
   this.targetFile = targetFile;
 
-  function next(token) {
-    console.log("in next function")
+  (function next(token) {
     client.exists(token, function(err, exists) {
-      console.log("exists")
-      console.log(arguments)
-      console.log(client)
       if (exists) return next(helpers.base62Random());
 
-      client.write(token, self.targetFile);
+      client.write("download:" + token, self.targetFile);
       self.link = "http://localhost:9000/download/" + token;
       return true;
     });
-  };
-
-  next(helpers.base62Random());
+  })(helpers.base62Random());
 }
 
 EmailWorker.prototype.perform = function(onSave) {
@@ -37,8 +32,10 @@ EmailWorker.prototype.perform = function(onSave) {
   };
 
   Queue.jobQueue.on('job complete', function(id) {
+    console.log("job finished");
     Queue.remove(id);
   }).on('job failed', function(id) {
+    console.log("job failed");
     Queue.retry(id); 
   });
 
@@ -51,13 +48,19 @@ EmailWorker.prototype.perform = function(onSave) {
       job.on("failed", function(id) {
         done();
       }).on("complete", function(job) {
-        Queue.emit('register callback', job.data.email);
         done();
       });
-      
+
+      new EmailService(self.to, self.link).mail(function(err, result) {
+        if (err) {
+          return job.emit("failed", job.id);
+        }
+
+        job.emit("complete", job);
+      });
 
     });
-    
+
   });
 
 };

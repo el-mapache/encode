@@ -2,7 +2,7 @@
   "author": "el-mapache",
   "name": "encoder",
   "description": "audio transcoder",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "repository": {
     "url": ""
   },
@@ -14,7 +14,7 @@
     "ejs": "0.8.3",
     "connect-redis": "*",
     "cron": "0.1.3",
-    "nodemailer": "0.2.4",
+    "nodemailer": "*",
     "fluent-ffmpeg": "*",
     "kue": "*",
     "cluster": "*"

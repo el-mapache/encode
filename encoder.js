@@ -1,11 +1,12 @@
-GLOBAL.dirname = __dirname;
-
 var http = require('http');
 var express = require('express');
 var app = express();
 var server = http.createServer(app);
 
-var settings = require('./config/app-settings.js').settings[app.settings.env];
+GLOBAL.env = app.settings.env;
+GLOBAL.dirname = __dirname;
+
+var settings = require('./config/app-settings.js')[GLOBAL.env];
 var redisConfigs = require('./config/redis.js');
 
 
@@ -50,7 +51,8 @@ app.get('/download/:token', function(req, res) {
 });
 
 GLOBAL.Queue.on('register callback', function(email, filename) {
-  new EmailWorker(email, filename, function(job) {
-    console.log("Job type %s with id of %d saved.", job.type, job.id);
-  });
+  new EmailWorker(email, filename).
+      perform(function(job) {
+        console.log("Job type %s with id of %d saved.", job.type, job.id);
+      });
 });
