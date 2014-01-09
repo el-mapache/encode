@@ -4,3 +4,4 @@ config/redis.js
 npm-debug.log
 .DS_Store
 data/*
+public/downloads/*

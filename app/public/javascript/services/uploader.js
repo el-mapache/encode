@@ -37,11 +37,11 @@ module.service('Uploader', [
         // Emit the transcoder's progress
         $rootScope.$emit("Poll:progress", progress);
 
-        if (valid) Poll.poll(response.token, done);
+        if (valid) Poll.poll(response.token, response.id, done);
       };
 
       // Call the initial poll
-      Poll.poll(response.token, done);
+      Poll.poll(response.token, response.id, done);
 
     }
 

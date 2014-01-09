@@ -10,6 +10,7 @@
     "node": "0.10.x"
   },
   "dependencies": {
+    "sha1": "*",
     "express": "3.x",
     "ejs": "0.8.3",
     "connect-redis": "*",

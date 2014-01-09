@@ -44,14 +44,13 @@ app.get('/', function(req,res) {
 });
 
 app.post('/upload', FilesController.create);
-app.get('/info/:token', ProgressController.get);
+app.get('/files/get/:token', FilesController.get);
+app.get('/files/download/:token/:filename', FilesController.download);
 
-app.get('/download/:token', function(req, res) {
+app.get('/info/:token/:id', ProgressController.get);
 
-});
-
-GLOBAL.Queue.on('register callback', function(email, filename) {
-  new EmailWorker(email, filename).
+GLOBAL.Queue.on('register callback', function(email, filename, hash) {
+  new EmailWorker(email, filename, hash).
       perform(function(job) {
         console.log("Job type %s with id of %d saved.", job.type, job.id);
       });

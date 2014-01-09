@@ -3,6 +3,12 @@ var http = require('http');
 var ProgressController = function() {
   return {
     get: function (req, res) {
+      if (req.params.token !== req.session.token.hash) {
+        return res.send({
+          status: 404, 
+          message: 'Job not found.'
+        });
+      }
 
       // Private function to process ffmpeg progress output and return it.
       function reportProgress(data) {
@@ -18,7 +24,7 @@ var ProgressController = function() {
         });
       }
 
-      http.get('http://localhost:9001/job/' + req.params.token, reportProgress)
+      http.get('http://localhost:9001/job/' + req.params.id, reportProgress)
       .on('error', function(err) {
         res.send({
           status: 500,

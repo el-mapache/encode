@@ -5,7 +5,7 @@ var helpers = require(GLOBAL.dirname + '/lib/support_functions.js');
 var Redis = require(GLOBAL.dirname + '/lib/redis.js');
 var client = new Redis();
 
-var EmailWorker = function(to, targetFile) {
+var EmailWorker = function(to, targetFile, hash) {
   var self = this;
 
   this.type = 'email';
@@ -13,15 +13,8 @@ var EmailWorker = function(to, targetFile) {
   this.to = to;
   this.targetFile = targetFile;
 
-  (function next(token) {
-    client.exists(token, function(err, exists) {
-      if (exists) return next(helpers.base62Random());
-
-      client.write("download:" + token, self.targetFile);
-      self.link = "http://localhost:9000/download/" + token;
-      return true;
-    });
-  })(helpers.base62Random());
+  client.write("download:" + hash, this.targetFile);
+  this.link = "http://localhost:9000/files/get/" + hash;
 }
 
 EmailWorker.prototype.perform = function(onSave) {

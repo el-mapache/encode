@@ -8,7 +8,7 @@ var module = angular.module("Poll", []);
 
 module.service("Poll", function($rootScope) {
   return {
-    poll: function(token, done) {
+    poll: function(token, id, done) {
 
       var xhr = new XMLHttpRequest();
 
@@ -26,7 +26,7 @@ module.service("Poll", function($rootScope) {
         }
       };
 
-      xhr.open("get", "/info/"+token, true);
+      xhr.open("get", "/info/"+token+"/"+id, true);
 
       xhr.send();
     }

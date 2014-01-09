@@ -27,7 +27,7 @@ module.exports = function(file) {
         '-ac', this.file.channels,
         '-ab', this.file.bitRate,
         '-f', this.file.format,
-        GLOBAL.dirname+"/"+this.file.normalizedName+this.file.format], {cwd: "data/uploads"});
+        GLOBAL.dirname+"/public/downloads/"+this.file.normalizedName+this.file.format], {cwd: "data/uploads"});
 
     ffmpeg.stderr.setEncoding('utf8');
 
@@ -54,8 +54,6 @@ module.exports = function(file) {
     });
 
     ffmpeg.on('exit', function(code) {
-      console.log("exiting")
-      console.log(code)
       callback(null, code);
     });
   };

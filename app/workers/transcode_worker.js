@@ -1,5 +1,6 @@
 var Queue = GLOBAL.Queue;
 var TranscoderService = require(GLOBAL.dirname + '/app/services/transcoder_service.js');
+var sha1 = require('sha1');
 
 var TranscodeWorker = function(file, email) {
   this.type = "transcode";
@@ -25,7 +26,8 @@ TranscodeWorker.prototype.perform = function(onSave) {
   });
 
   Queue.enqueue(this.type, transcodeParams, function(job) {
-    onSave(job);
+    var hashedFileName = sha1(job.data.finalOutputName);
+    onSave(hashedFileName, job.id);
 
     Queue.jobQueue.process("transcode", function(job, done) {
       console.log("processing");
@@ -33,7 +35,7 @@ TranscodeWorker.prototype.perform = function(onSave) {
       job.on("failed", function(id) {
         done();
       }).on("complete", function(job) {
-        Queue.emit('register callback', job.data.email, job.data.finalOutputName);
+        Queue.emit('register callback', job.data.email, job.data.finalOutputName, hashedFileName);
         done();
       });
 
