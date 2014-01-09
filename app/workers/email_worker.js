@@ -1,29 +1,25 @@
 var Queue = GLOBAL.Queue;
 var EmailService = require(GLOBAL.dirname + "/app/services/emailer.js");
-var helpers = require('./lib/support_functions.js');
-var RedisClient = require(GLOBAL.dirname + '/lib/redis.js');
-var redis = new RedisClient();
+var helpers = require(GLOBAL.dirname + '/lib/support_functions.js');
 
-var downloadKey;
-
-do {
-  downloadKey = helpers.base62Random();
-} while (client.exists(downloadKey, function(err) {
-  console.log("while loop error?: %s", err);
-}));
-
+var Redis = require(GLOBAL.dirname + '/lib/redis.js');
+var client = new Redis();
 var EmailWorker = function(to, targetFile) {
   var self = this;
 
   this.type = 'email';
-  
+
   this.to = to;
   this.targetFile = targetFile;
 
   function next(token) {
+    console.log("in next function")
     client.exists(token, function(err, exists) {
+      console.log("exists")
+      console.log(arguments)
+      console.log(client)
       if (exists) return next(helpers.base62Random());
-      
+
       client.write(token, self.targetFile);
       self.link = "http://localhost:9000/download/" + token;
       return true;

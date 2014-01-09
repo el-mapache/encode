@@ -1,5 +1,5 @@
 var node_email = require('nodemailer');
-var settings = require("./configs.js");
+var settings = require(GLOBAL.dirname + '/config/app-settings.js');
 
 function emailer(to, link, plain) {
   console.log('Emailer called, verification: ' + link);

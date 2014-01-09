@@ -16,6 +16,7 @@ require('./config/initializers/queue.js')(9001, redisConfigs);
 var FilesController = require('./app/controllers/files_controller.js')();
 var ProgressController = require('./app/controllers/progress_controller.js');
 
+var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js')
 
 var csrfValue = function(req) {
   return (req.body && req.body._csrf) || (req.query && req.query._csrf) ||
