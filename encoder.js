@@ -32,7 +32,6 @@ GLOBAL.dirname = __dirname;
 
 require('./config/initializers/queue.js')(9001, settings.redisConfigs);
 
-var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js')
 
 var csrfValue = function(req) {
   return (req.body && req.body._csrf) || (req.query && req.query._csrf) ||
@@ -54,6 +53,7 @@ app.configure(function() {
   app.engine('html', require('ejs').renderFile);
 });
 
+var redis = require(GLOBAL.dirname + '/lib/redis.js')(settings.redisConfigs);
 
 // Start the server.
 
@@ -66,11 +66,13 @@ console.log('Server listening at port %d', settings.port);
 require('./app/routes/routes.js')(app, express.bodyParser, settings);
 
 
+var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js');
+
 // Global event listener to register email jobs when transcoding is finished.
 // TODO Might be better as redis pubsub activity?
 
 GLOBAL.Queue.on('register callback', function(email, filename, hash) {
-  new EmailWorker(email, filename, hash).
+  new EmailWorker(email, filename, hash, client).
       perform(function(job) {
         console.log("Job type %s with id of %d saved.", job.type, job.id);
       });

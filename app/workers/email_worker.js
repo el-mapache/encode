@@ -2,18 +2,17 @@ var Queue = GLOBAL.Queue;
 var EmailService = require(GLOBAL.dirname + "/app/services/emailer.js");
 var helpers = require(GLOBAL.dirname + '/lib/support_functions.js');
 
-var Redis = require(GLOBAL.dirname + '/lib/redis.js');
-var client = new Redis();
-
-var EmailWorker = function(to, targetFile, hash) {
+var EmailWorker = function(to, targetFile, hash, client) {
   var self = this;
 
   this.type = 'email';
 
+  this.client = client;
+
   this.to = to;
   this.targetFile = targetFile;
 
-  client.write("download:" + hash, this.targetFile);
+  this.client.write("download:" + hash, this.targetFile);
   this.link = "http://localhost:9000/files/get/" + hash;
 }
 

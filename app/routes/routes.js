@@ -2,9 +2,9 @@
  * Route controllers
 **/
 
-module.exports = function(app, bodyParser, settings) {
+module.exports = function(app, bodyParser, redis) {
 
-  var FilesController = require(GLOBAL.dirname + '/app/controllers/files_controller.js')(settings.redisConfigs),
+  var FilesController = require(GLOBAL.dirname + '/app/controllers/files_controller.js')(redis),
       ProgressController = require(GLOBAL.dirname + '/app/controllers/progress_controller.js');
 
   app.get('/', function(req,res) {
