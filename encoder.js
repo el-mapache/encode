@@ -63,7 +63,7 @@ console.log('Server listening at port %d', settings.port);
 
 // Routes
 
-require('./app/routes/routes.js')(app, express.bodyParser);
+require('./app/routes/routes.js')(app, express.bodyParser, settings);
 
 
 // Global event listener to register email jobs when transcoding is finished.

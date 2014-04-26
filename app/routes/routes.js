@@ -2,10 +2,10 @@
  * Route controllers
 **/
 
-var FilesController = require(GLOBAL.dirname + '/app/controllers/files_controller.js')(),
-    ProgressController = require(GLOBAL.dirname + '/app/controllers/progress_controller.js');
+module.exports = function(app, bodyParser, settings) {
 
-module.exports = function(app, bodyParser) {
+  var FilesController = require(GLOBAL.dirname + '/app/controllers/files_controller.js')(settings.redisConfigs),
+      ProgressController = require(GLOBAL.dirname + '/app/controllers/progress_controller.js');
 
   app.get('/', function(req,res) {
     res.locals.token = req.csrfToken();

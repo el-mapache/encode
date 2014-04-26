@@ -19,3 +19,21 @@ Config setting for MacOSX/Linux (your mileage may vary)
 --enable-libfaac --enable-libx264 --enable-libxvid --enable-nonfree --enable-gpl --enable-libmp3lame --enable-pthreads --enable-libvpx --enable-libvorbis --disable-mmx --arch=x86_32 --enable-shared --enable-libtheora --pkg-config=pkg-config --enable-version3
 
 (samplerate * 2 * (bitrate/8) * seconds) / 1024	
+
+background-color:#dedede;
+background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), 
+    linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+    
+background-size:100px 100px;
+background-position: 0 0, 50px 50px;
+-webkit-transform: scale(0.03)
+
+Bresenham can be used to very easily “smooth” this result. What you have to do is:
+
+set a point called REF which is equal to START to begin with,
+check if the REF points “sees” the 3rd point of the path. If so, remove 2nd point because it is basically useless.
+repeat by checking if REF points sees 4th point, etc.
+If the REF point cannot see a given point, then the previous point is useful and should be kept. In such a case, the REF is now that previous point and you can repeat the algorithm with the next points.
+This way, you clean the path, only keeping successive points that see each other, and removing useless intermediaries.
+
+http://codepen.io/cwolves/pen/prvnb
