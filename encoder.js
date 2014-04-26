@@ -14,11 +14,9 @@ var env = app.settings.env;
 
 /*
  * App settings objects.
- * TODO Add environment keys for redis configs.
 **/
 
-var settings = require('./config/app-settings.js')[env],
-    redisConfigs = require('./config/redis.js');
+var settings = require('./config/app-settings.js')[env];
 
 
 /* 
@@ -32,7 +30,7 @@ GLOBAL.dirname = __dirname;
  * Initialize the global Queue object, a wrapper for the kue library
 **/
 
-require('./config/initializers/queue.js')(9001, redisConfigs);
+require('./config/initializers/queue.js')(9001, settings.redisConfigs);
 
 var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js')
 
@@ -60,7 +58,7 @@ app.configure(function() {
 // Start the server.
 
 server.listen(settings.port);
-console.log('Server listening at port 9000');
+console.log('Server listening at port %d', settings.port);
 
 
 // Routes
