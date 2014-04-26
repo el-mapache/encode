@@ -6,6 +6,7 @@ var FilesController = require(GLOBAL.dirname + '/app/controllers/files_controlle
     ProgressController = require(GLOBAL.dirname + '/app/controllers/progress_controller.js');
 
 module.exports = function(app, bodyParser) {
+
   app.get('/', function(req,res) {
     res.locals.token = req.csrfToken();
     res.render(GLOBAL.dirname + "/public/index.html");
@@ -16,3 +17,4 @@ module.exports = function(app, bodyParser) {
   app.get('/files/download/:token/:filename', FilesController.download);
   app.get('/info/:token/:id', ProgressController.get);
 };
+
