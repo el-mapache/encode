@@ -3,7 +3,9 @@ var TranscodeWorker = require(GLOBAL.dirname + '/app/workers/transcode_worker.js
 var Redis = require(GLOBAL.dirname + '/lib/redis.js');
 var fs = require("fs");
 
-var FilesController = function() {
+var FilesController = function(redisConfigs) {
+  var configs = redisConfigs;
+
   return {
     create: function(req, res) {
       var params, file, transcoder;
@@ -42,7 +44,7 @@ var FilesController = function() {
     },
 
     get: function(req, res) {
-      var client = new Redis();
+      var client = new Redis(redisConfigs);
 
       req.session.token = req.params.token;
 
