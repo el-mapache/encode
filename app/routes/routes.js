@@ -12,7 +12,7 @@ module.exports = function(app, bodyParser, redis) {
     res.render(GLOBAL.dirname + "/public/index.html");
   });
 
-  app.post('/upload', bodyParser(), FilesController.create);
+  app.post('/upload', bodyParser({uploadDir: GLOBAL.dirname}), FilesController.create);
   app.get('/files/get/:token', FilesController.get);
   app.get('/files/download/:token/:filename', FilesController.download);
   app.get('/info/:token/:id', ProgressController.get);

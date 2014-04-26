@@ -72,7 +72,7 @@ var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js');
 // TODO Might be better as redis pubsub activity?
 
 GLOBAL.Queue.on('register callback', function(email, filename, hash) {
-  new EmailWorker(email, filename, hash, client).
+  new EmailWorker(email, filename, hash, redis).
       perform(function(job) {
         console.log("Job type %s with id of %d saved.", job.type, job.id);
       });
