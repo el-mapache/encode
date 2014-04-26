@@ -53,7 +53,8 @@ app.configure(function() {
   app.engine('html', require('ejs').renderFile);
 });
 
-var redis = require(GLOBAL.dirname + '/lib/redis.js')(settings.redisConfigs);
+var Redis = require(GLOBAL.dirname + '/lib/redis.js')(settings.redisConfigs),
+   redis = new Redis();
 
 // Start the server.
 
