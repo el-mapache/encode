@@ -19,10 +19,10 @@ EmailService.prototype.mail = function(done) {
 
   smtpTransport.sendMail({
     to: this.to,
-    from: "adam.biagianti@gmail.com",
+    from: "encoder@availableforfriendship.com",
     subject: "You've received a converted audio file.",
     text: "Click this link to go to your audio file download page. Files expire after one hour.",
-    html: '<div><p>This link will take you to your download page.&nbsp;&nbsp;'+this.link+'</p></div>'
+    html: '<div><p>This link will take you to your download page.&nbsp;&nbsp;'+this.link+'</p></div><br><small>This is an automated email. Please do not reply.</small>'
   },
 
   function(err, result) {

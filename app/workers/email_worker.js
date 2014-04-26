@@ -13,7 +13,7 @@ var EmailWorker = function(to, targetFile, hash, client) {
   this.targetFile = targetFile;
 
   this.client.write("download:" + hash, this.targetFile);
-  this.link = "http://localhost:9000/files/get/" + hash;
+  this.link = "encoder.availableforfriendship.com/files/get/" + hash;
 }
 
 EmailWorker.prototype.perform = function(onSave) {

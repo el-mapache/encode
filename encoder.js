@@ -54,7 +54,7 @@ app.configure(function() {
 });
 
 var Redis = require(GLOBAL.dirname + '/lib/redis.js')(settings.redisConfigs),
-   redis = new Redis();
+    redis = new Redis();
 
 // Start the server.
 
@@ -64,7 +64,7 @@ console.log('Server listening at port %d', settings.port);
 
 // Routes
 
-require('./app/routes/routes.js')(app, express.bodyParser, settings);
+require('./app/routes/routes.js')(app, express.bodyParser, redis);
 
 
 var EmailWorker = require(GLOBAL.dirname + '/app/workers/email_worker.js');
