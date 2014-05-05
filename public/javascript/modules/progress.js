@@ -20,7 +20,8 @@ progress.controller("ProgressCtrl", [
     $rootScope.$on("Uploader:complete", function(evt, message) {
       // The upload finished successfully.
       $scope.$apply(function() {
-        $scope.response = message;
+        $scope.response = message + " You'll receive an email shortly with a link to your converted file.";
+        window.scrollTo(0, screen.height);
         $scope.success = true;
       });
     });
